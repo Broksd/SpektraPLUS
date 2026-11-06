@@ -28,11 +28,13 @@ struct Filmstrip: View {
             ScrollViewReader { proxy in
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack(spacing: 14) {
-                        ForEach(session.frames) { frame in
+                        // The strip as filtered by flag (`Session.visibleFrames`).
+                        ForEach(session.visibleFrames) { frame in
                             FilmstripCell(frame: frame,
                                           geometry: session.thumbnailGeometry(for: frame.id),
                                           framing: session.framing(of: frame.id),
-                                          state: session.frameStates[frame.id] ?? .unprocessed)
+                                          state: session.frameStates[frame.id] ?? .unprocessed,
+                                          flag: session.flag(of: frame.id))
                                 .id(frame.id)
                                 // Dragged along the strip a frame is moved
                                 // (`FrameReorder`); onto a pair's hole on the
@@ -52,6 +54,13 @@ struct Filmstrip: View {
                                                   command: NSEvent.modifierFlags.contains(.command))
                                 }
                                 .contextMenu {
+                                    // On the frame under the pointer, or on
+                                    // the whole picked set when it is in it.
+                                    let targets = session.isPicked(frame.id) ? session.selectedFrames : [frame.id]
+                                    Button(L("Flag (P)", zh: "标为留用 (P)")) { session.setFlag(.flagged, for: targets) }
+                                    Button(L("Reject (X)", zh: "标为排除 (X)")) { session.setFlag(.rejected, for: targets) }
+                                    Button(L("Clear Flag (U)", zh: "清除旗标 (U)")) { session.setFlag(nil, for: targets) }
+                                    Divider()
                                     Button(L(.helpRevealInFinder)) { NSWorkspace.shared.activateFileViewerSelecting([frame.id]) }
                                     if HalfFramePair.isPair(frame.id) {
                                         Button(L("Delete Pair", zh: "删除半格拼接")) { session.deletePair(frame.id) }
@@ -88,6 +97,13 @@ struct Filmstrip: View {
             Text(L(.statusEmptyFilmstrip))
                 .font(Theme.Font.label).foregroundStyle(Theme.dim)
                 .opacity(session.frames.isEmpty ? 1 : 0)
+                .allowsHitTesting(false)
+        }
+        .overlay(alignment: .center) {
+            // A folder whose frames the flag filter hides, every one.
+            Text(L("No photos match the filter", zh: "没有符合筛选条件的照片"))
+                .font(Theme.Font.label).foregroundStyle(Theme.dim)
+                .opacity(!session.frames.isEmpty && session.visibleFrames.isEmpty ? 1 : 0)
                 .allowsHitTesting(false)
         }
         .railCard()
@@ -144,6 +160,9 @@ struct FilmstripCell: View {
     let framing: FrameFraming
     /// Unread by this cell; kept as the guard test's construction seam.
     let state: FrameState
+    /// The cull mark: a flag in the corner for a keeper, and a rejected frame
+    /// held back under a cross.
+    var flag: FrameFlag? = nil
     var body: some View {
         CropMaskedThumbnail(url: frame.id, geometry: geometry) { image in
             cell(image)
@@ -163,9 +182,20 @@ struct FilmstripCell: View {
                 }
             }
             .frame(height: Theme.Metric.thumbHeight)
+            .opacity(flag == .rejected ? 0.4 : 1)
             .overlay(RoundedRectangle(cornerRadius: 2)
                 .stroke(Theme.selectionFrame, lineWidth: framing.lineWidth)
                 .opacity(framing.opacity))
+            .overlay(alignment: .topLeading) {
+                if let flag {
+                    Image(systemName: flag == .flagged ? "flag.fill" : "xmark.circle.fill")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(flag == .flagged ? Theme.accent : Theme.text)
+                        .shadow(color: .black.opacity(0.7), radius: 1.5)
+                        .padding(4)
+                        .allowsHitTesting(false)
+                }
+            }
         }
     }
 

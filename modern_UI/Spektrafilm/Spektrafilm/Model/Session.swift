@@ -77,6 +77,103 @@ final class Session: CanvasHost {
 
     var libraryTitle: String = ""
 
+    // MARK: folders and flags
+    //
+    // The folder browser opens one folder at a time; its record
+    // (`FolderRecord`, `SpektraLab.folder.json` beside the photographs) holds
+    // the flags, the filter, the frame that was open and every frame's edits,
+    // and is read back when the folder is opened again.
+
+    /// The folder on screen, when one folder was opened (not a hand-picked
+    /// set of files). The folder browser highlights it.
+    private(set) var libraryFolder: URL?
+
+    /// Each frame's cull mark. Absent is unflagged.
+    private(set) var flags: [URL: FrameFlag] = [:]
+
+    /// Which frames the filmstrip shows. Kept in the folder's record.
+    var flagFilter: FlagFilter = .all {
+        didSet {
+            guard flagFilter != oldValue, let folder = libraryFolder else { return }
+            let filter = flagFilter
+            FolderRecordStore.update(folder, create: false) { $0.filter = filter }
+        }
+    }
+
+    /// The frames the filmstrip shows, in display order: `frames` through
+    /// `flagFilter`. The open frame stays in it even when the filter would
+    /// hide it — flagging a frame out of view must not pull the strip out
+    /// from under the canvas.
+    var visibleFrames: [Frame] {
+        guard flagFilter != .all else { return frames }
+        return frames.filter { flagFilter.admits(flags[$0.id]) || $0.id == selection }
+    }
+
+    func flag(of url: URL) -> FrameFlag? { flags[url] }
+
+    /// How many frames each filter would show.
+    func count(for filter: FlagFilter) -> Int {
+        filter == .all ? frames.count : frames.filter { filter.admits(flags[$0.id]) }.count
+    }
+
+    /// What P, X and U act on: the picked set when the open frame is in it,
+    /// else the open frame.
+    var flagTargets: [URL] {
+        let set = selectedFrames
+        if let selection, set.contains(selection) { return set }
+        return selection.map { [$0] } ?? set
+    }
+
+    var canFlag: Bool { !batchExporting && !flagTargets.isEmpty }
+
+    /// P or X: set the flag on the targets, or clear it when every one of
+    /// them already has it — the key is a switch.
+    func toggleFlag(_ flag: FrameFlag) {
+        let targets = flagTargets
+        guard canFlag else { return }
+        let allSet = targets.allSatisfy { flags[$0] == flag }
+        setFlag(allSet ? nil : flag, for: targets)
+    }
+
+    /// U, or an explicit choice: one flag (or none) on these frames, written
+    /// to their folder's record.
+    func setFlag(_ flag: FrameFlag?, for urls: [URL]) {
+        guard !batchExporting else { return }
+        for url in urls {
+            flags[url] = flag
+            FolderRecordStore.setFlag(flag, for: url)
+        }
+        let n = urls.count
+        switch flag {
+        case .flagged: status = n == 1 ? L("Flagged", zh: "已标为留用") : L("\(n) photos flagged", zh: "已将 \(n) 张标为留用")
+        case .rejected: status = n == 1 ? L("Rejected", zh: "已标为排除") : L("\(n) photos rejected", zh: "已将 \(n) 张标为排除")
+        case nil: status = n == 1 ? L("Flag cleared", zh: "已清除旗标") : L("\(n) flags cleared", zh: "已清除 \(n) 张的旗标")
+        }
+    }
+
+    /// Read the flags, the filter and the open frame back from the folder's
+    /// record. Returns the frame that was open, if it is still listed.
+    private func restoreFolderRecord(for frames: [Frame], folder: URL?) -> URL? {
+        var restored: [URL: FrameFlag] = [:]
+        var records: [String: FolderRecord] = [:]
+        for frame in frames {
+            guard let parent = FolderRecordStore.folder(of: frame.id) else { continue }
+            let key = parent.path
+            if records[key] == nil { records[key] = FolderRecordStore.read(parent) ?? FolderRecord() }
+            if let flag = records[key]?.flag(of: frame.id.lastPathComponent) { restored[frame.id] = flag }
+        }
+        flags = restored
+        // `libraryFolder` is nil while this runs, so setting the filter here
+        // writes nothing back.
+        guard let folder, let record = FolderRecordStore.read(folder) else {
+            flagFilter = .all
+            return nil
+        }
+        flagFilter = record.filter
+        guard let name = record.current else { return nil }
+        return frames.first { $0.id.lastPathComponent == name && flagFilter.admits(restored[$0.id]) }?.id
+    }
+
     // MARK: the current frame
     var sidecar = Sidecar() {
         didSet { if oldValue.noFilm != sidecar.noFilm { applyNoFilm() } }
@@ -405,6 +502,12 @@ final class Session: CanvasHost {
     var rightCollapsed = false
     var topCollapsed = UserDefaults.standard.bool(forKey: Session.uiKey + "topCollapsed") { didSet { UserDefaults.standard.set(topCollapsed, forKey: Session.uiKey + "topCollapsed") } }
     var filmstripCollapsed = UserDefaults.standard.bool(forKey: Session.uiKey + "filmstripCollapsed") { didSet { UserDefaults.standard.set(filmstripCollapsed, forKey: Session.uiKey + "filmstripCollapsed") } }
+    /// The folder browser at the window's leading edge (`FolderBrowser`).
+    /// Kept between launches, like the filmstrip: it is where a session starts.
+    var browserCollapsed = UserDefaults.standard.bool(forKey: Session.uiKey + "browserCollapsed") { didSet { UserDefaults.standard.set(browserCollapsed, forKey: Session.uiKey + "browserCollapsed") } }
+    /// Whether the browser is on screen. Never in a snapshot capture, which
+    /// is measured against the drawing's three regions.
+    var showsFolderBrowser: Bool { !browserCollapsed && !snapshotPanelWidths }
     /// Snapshot mode only: hold both rails at `PanelWidthRange.standard`.
     ///
     /// A rail's width is the user's and persists, so a rail dragged wide in
@@ -1342,7 +1445,16 @@ final class Session: CanvasHost {
             enqueuePrintWriteback(for: selection)
         }
         ThumbnailCache.shared.clear()
+        // One folder opened (not a file, not a hand-picked set): its record
+        // decides the flags, the filter and which frame comes back on screen.
+        var isDirectory: ObjCBool = false
+        let folder: URL? = urls.count == 1
+            && FileManager.default.fileExists(atPath: urls[0].path, isDirectory: &isDirectory)
+            && isDirectory.boolValue ? urls[0].standardizedFileURL : nil
+        libraryFolder = nil
         frames = new
+        let reopen = restoreFolderRecord(for: new, folder: folder)
+        libraryFolder = folder
         // One read per frame, for both things the library shows of it.
         let saved = new.map { ($0.id, Sidecar.load(for: $0.id)) }
         frameStates = Dictionary(uniqueKeysWithValues: saved.map { ($0.0, $0.1?.state ?? .unprocessed) })
@@ -1365,6 +1477,10 @@ final class Session: CanvasHost {
         // frame is chosen.
         if files.count == 1 {
             click(files[0].id)
+        } else if let reopen {
+            // The folder's record remembers the frame that was open: the
+            // person is coming back to it, not looking through a new set.
+            click(reopen)
         } else {
             unloadSelection()
         }
@@ -1492,6 +1608,7 @@ final class Session: CanvasHost {
         if selection == url { enqueuePrintWriteback(for: url) }
         frames.removeAll { $0.id == url }
         frameStates[url] = nil
+        flags[url] = nil
         picked.remove(url)
         renderer.store.invalidatePrint(for: url)
         if frames.isEmpty {
@@ -1506,9 +1623,12 @@ final class Session: CanvasHost {
     /// A chevron or an arrow key: the same act as a plain click on the
     /// neighbouring frame, and it collapses the set for the same reason.
     func selectRelative(_ delta: Int) {
-        guard let selection, let i = frames.firstIndex(where: { $0.id == selection }) else { return }
-        let j = (i + delta).clamped(to: 0...(frames.count - 1))
-        if j != i { click(frames[j].id) }
+        // The strip as shown: with a flag filter on, the arrows step through
+        // the frames it lets through.
+        let shown = visibleFrames
+        guard let selection, let i = shown.firstIndex(where: { $0.id == selection }) else { return }
+        let j = (i + delta).clamped(to: 0...(shown.count - 1))
+        if j != i { click(shown[j].id) }
     }
 
     /// A left click on a thumbnail — the only thing the person can do that
@@ -1541,8 +1661,16 @@ final class Session: CanvasHost {
     /// starts with the first in display order; only that frame is loaded.
     func selectAllFrames() {
         guard canSelectAllFrames else { return }
-        picked = Set(frames.map(\.id))
-        if selection == nil, let first = frames.first { select(first.id) }
+        // Everything the strip shows: with the filter on Flagged, ⌘A and
+        // Export is "export the keepers".
+        // The open frame is always in the set (`togglePick`), so one the
+        // filter would hide gives its place on the canvas to the first frame
+        // the filter lets through.
+        let shown = frames.filter { flagFilter.admits(flags[$0.id]) }
+        guard !shown.isEmpty else { return }
+        if let selection, !shown.contains(where: { $0.id == selection }) { select(shown[0].id) }
+        picked = Set(shown.map(\.id))
+        if selection == nil, let first = shown.first { select(first.id) }
     }
 
     /// One frame in or out of the set, canvas unmoved.
@@ -1598,6 +1726,7 @@ final class Session: CanvasHost {
         developTask?.cancel(); developTask = nil
         renderer.dropFullRender()
         sidecar = Sidecar.load(for: url) ?? Sidecar()
+        rememberOpenFrame()
         // The file this frame's edits live in: from here on, a write made
         // outside this window reaches the canvas (issue #29).
         sidecarWatch.watch(Sidecar.url(for: url))
@@ -2971,6 +3100,17 @@ final class Session: CanvasHost {
         }
         savedGeometry[url] = sidecar.geometry
         if sidecar.params.cutsFrame { filmEdgeThumbnails.insert(url) } else { filmEdgeThumbnails.remove(url) }
+        rememberOpenFrame()
+    }
+
+    /// The folder's record remembers which frame was open, for the next time
+    /// the folder is chosen. A folder nobody has flagged or edited in gets no
+    /// record for this alone; a no-op when the record already says so.
+    private func rememberOpenFrame() {
+        guard let folder = libraryFolder, let url = selection,
+              FolderRecordStore.folder(of: url)?.path == folder.path else { return }
+        let name = url.lastPathComponent
+        FolderRecordStore.update(folder, create: false) { $0.current = name }
     }
 
     // MARK: - white balance

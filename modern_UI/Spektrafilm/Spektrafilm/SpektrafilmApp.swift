@@ -189,6 +189,37 @@ struct EditorCommands: Commands {
                 .keyboardShortcut("r", modifiers: [.command, .option])
                 .disabled(session.selection == nil)
         }
+        // The folder browser and the cull. P / X / U are Lightroom's and
+        // Capture One's keys for flag, reject and clear; like V, H and C they
+        // are menu shortcuts, which `TypingKeyGuard` keeps out of text fields.
+        CommandMenu(L("Library", zh: "图库")) {
+            Button(session.browserCollapsed ? L("Show Folder Browser", zh: "显示文件夹浏览器")
+                                            : L("Hide Folder Browser", zh: "隐藏文件夹浏览器")) {
+                withAnimation(.easeOut(duration: 0.18)) { session.browserCollapsed.toggle() }
+            }
+            .keyboardShortcut("l", modifiers: [.command, .shift])
+            Divider()
+            Button(L("Flag", zh: "标为留用")) { session.toggleFlag(.flagged) }
+                .keyboardShortcut("p", modifiers: []).disabled(!session.canFlag)
+            Button(L("Reject", zh: "标为排除")) { session.toggleFlag(.rejected) }
+                .keyboardShortcut("x", modifiers: []).disabled(!session.canFlag)
+            Button(L("Clear Flag", zh: "清除旗标")) { session.setFlag(nil, for: session.flagTargets) }
+                .keyboardShortcut("u", modifiers: []).disabled(!session.canFlag)
+            Divider()
+            Picker(L("Show", zh: "显示"), selection: Binding(
+                get: { session.flagFilter },
+                set: { session.flagFilter = $0 })) {
+                ForEach(FlagFilter.allCases) { Text(FlagFilterList.title($0)).tag($0) }
+            }
+            Button(L("Show All Photos", zh: "显示全部照片")) { session.flagFilter = .all }
+                .keyboardShortcut("1", modifiers: [.command, .option])
+            Button(L("Show Flagged", zh: "只显示留用")) { session.flagFilter = .flagged }
+                .keyboardShortcut("2", modifiers: [.command, .option])
+            Button(L("Show Unflagged", zh: "只显示未标记")) { session.flagFilter = .unflagged }
+                .keyboardShortcut("3", modifiers: [.command, .option])
+            Button(L("Show Rejected", zh: "只显示排除")) { session.flagFilter = .rejected }
+                .keyboardShortcut("4", modifiers: [.command, .option])
+        }
         CommandMenu("Frame") {
             // Capture One uses the unmodified arrow keys for adjacent images.
             // The canvas responder already routes the same keys to
