@@ -45,6 +45,23 @@ quarantine once:
 xattr -d -r com.apple.quarantine /Applications/SpektraLab.app
 ```
 
+## Folders and flags
+
+The **folder browser** (Library → Show Folder Browser, ⇧⌘L) lists your home
+folder, Pictures, every mounted disk and card, and any folder you add with
+**+**. Click a folder to open its photographs in the filmstrip.
+
+Cull with **P** (flag), **X** (reject) and **U** (clear); P and X are switches.
+The filter under the folder tree (or Library → Show, ⌥⌘1–4) shows all,
+flagged, unflagged or rejected photos, and ⌘A selects only what the filter
+shows — so *Flagged, ⌘A, ⌘E* exports the keepers.
+
+Each folder keeps a record of the work done in it, `SpektraLab.folder.json`,
+beside the photographs: the flags, the filter, the photo that was open, the
+dragged order and every photo's edits. Choose the folder again — on this Mac
+or another, or after it was moved — and all of it comes back. Settings →
+General → Library turns the file off.
+
 ## Select and sync photos
 
 Click a photo to make it the current photo, then Command-click other photos to

@@ -377,12 +377,14 @@ RFC-018. One working space, exactly one conversion per destination.
 | what | where | survives |
 |---|---|---|
 | a frame's edits (params, adjustments, geometry, state) | one sidecar per frame in `~/Library/Application Support/SpektraLab/Sidecars/`, named `<file>-<sha256(path)[:16]>.spektra.json`; a moved or renamed file is recognised by a stored fingerprint. Old sidecars beside the image are migrated there on first read | everything |
+| a folder's flags, filter, open frame, dragged order and a copy of every frame's edits | `SpektraLab.folder.json` **in the photographs' folder** (`FolderRecord`), mirrored on every sidecar save; Settings ▸ General ▸ Library turns it off. On load the newer of the store's sidecar and the folder's copy wins | everything, and a move or copy of the folder |
 | app settings, layout, interface scale | `UserDefaults` (`ui2.*`, `diag.*`) | everything |
 | decodes and finished prints | the disk cache (§4) | until evicted; deleting it costs speed, never work |
 | the session log | `~/Library/Logs/SpektraLab/` (RFC-016), settable | its retention settings |
 | an export's job log | `<file>.joblog.jsonl` beside it — **opt-in** since 2026-09-26 (Settings ▸ Diagnostics) | — |
 
-Nothing is written into the photo's folder except exports. A develop writes
+Nothing is written into the photo's folder except exports and, while it is on,
+the folder's record (§7.13). A develop writes
 the sidecar and changes the exposure meter's input, so a test opens a **copy**
 of a fixture, never the fixture.
 
@@ -518,6 +520,23 @@ inside a field. `TypingKeyGuard` is a local key monitor that sends typing keys
 - **Select all and Sync** (⌘A, Settings Clipboard ▸ Sync to N) write the ticked
   groups from the current frame to the picked set through the clipboard's own
   rules; there is no batch undo.
+- **The folder browser** (`Panels/FolderBrowser.swift`, ⇧⌘L) is a column left
+  of the left rail: home, Pictures, mounted volumes and added folders, listed
+  lazily. A click is `Session.open(urls: [folder])`; `Session.libraryFolder`
+  is the folder on screen. While it is open its header holds the window
+  buttons' clearance instead of the left rail's.
+- **Flags** (`FrameFlag`: flagged, rejected; P / X toggle, U clears) and the
+  filter (`FlagFilter`) live in `Session.flags` / `flagFilter`; the filmstrip
+  shows `visibleFrames`, arrows step through it, and ⌘A picks what it shows,
+  so "Flagged, ⌘A, ⌘E" exports the keepers.
+- **The folder's record** (`Model/FolderRecord.swift`) is
+  `SpektraLab.folder.json` beside the photographs: flags, filter, the open
+  frame, the dragged order, a history, and each frame's sidecar keyed by file
+  name (without `source`). `Sidecar.save` mirrors into it, `Sidecar.load`
+  prefers it when it is newer than the store's file (another Mac, a cleared
+  store) and writes it back into the store. Opening one folder restores the
+  flags and filter and re-opens the frame that was open. Off under XCTest
+  unless a test calls `FolderRecordStore.useForTests(true)`.
 
 ---
 

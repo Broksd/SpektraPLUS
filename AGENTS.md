@@ -284,7 +284,10 @@ do not run here; the C++ port still carries each lesson, and code cites them.
     `~/Library/Application Support/SpektraLab/Sidecars/<file>-<sha256(path)[:16]>.spektra.json`
     with a fingerprint for moved files; `<image>.spektra.json` is the old home,
     migrated on first read. **A develop writes a sidecar**, so a test copies its
-    fixture before opening it.
+    fixture before opening it. The one opt-out exception is the folder's own
+    record, `SpektraLab.folder.json` (`FolderRecord`, ARCHITECTURE §7.13): a
+    mirror of the sidecars plus flags, on by default in the app, **off under
+    XCTest** unless `FolderRecordStore.useForTests(true)`.
 
 ---
 
