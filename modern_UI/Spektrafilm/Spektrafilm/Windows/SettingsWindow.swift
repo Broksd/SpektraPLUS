@@ -58,6 +58,7 @@ struct SettingsWindow: View {
     /// samples.
     @State private var ticker: Timer?
     @AppStorage(Session.decoupleEffectsKey) private var decoupleEffects = false
+    @AppStorage(FolderRecordStore.enabledKey) private var folderRecord = true
 
     /// The page on screen, remembered between openings like the editor's
     /// own layout.
@@ -73,6 +74,7 @@ struct SettingsWindow: View {
                     case .general:
                         languageSection
                         appearanceSection
+                        librarySection
                         machineSection
                     case .rendering:
                         renderingSection
@@ -197,6 +199,22 @@ struct SettingsWindow: View {
                     caption(L("Whether cropping changes the physical scale of grain, halation and glare. Off — the default, and the physically true answer — the crop shows less of the same negative and its grain is the size it always was. On, the cropped rectangle *is* the frame: the Film section's Side Length now describes the crop, so a smaller crop gets coarser grain and wider halation, as if the whole negative had been the crop. It applies as you drag the crop, and switching it re-develops the open frame at once. The engine's film size tops out at 200 mm, which a crop to about a fifth of a 135 frame's long edge reaches. This is the setting the Film section's Side Length row is measured against.", zh: "裁剪是否改变颗粒、光晕与耀光的物理尺度。关闭（默认，也是物理上正确的做法）时，裁剪只是看到同一张负片的更小部分，颗粒大小不变。打开时，裁剪框就是画幅：胶片画幅中的边长描述的是裁剪后的区域，裁得越小颗粒越粗、光晕越宽，就像整张负片本来就是这么大。拖动裁剪时即时生效，切换此项会立即重新显影当前照片。引擎的胶片尺寸上限为 200 mm，大约相当于把 135 画幅的长边裁到五分之一。胶片画幅中的边长一行以此设置为准。"))
                     ToggleRow(label: L("Decouple effects", zh: "分离效果强度"), isOn: $decoupleEffects)
                     caption(L("Show a strength for each film effect beside its switch — grain, halation and its scatter, DIR couplers, glare — and let grain's sub-layer model be chosen on its own. Every strength is a multiple of what the chosen film would do, so 1 is always that film as modelled. The strengths belong to the frame: turning this off hides the sliders and changes no picture.", zh: "在每个胶片效果的开关旁显示强度滑块（颗粒、光晕及其散射、DIR 耦合剂、耀光），并可单独选择颗粒的分层模型。强度是所选胶片本身效果的倍数，1 始终代表该胶片的模型原样。强度属于照片本身：关闭此项只会隐藏滑块，不会改变任何画面。"))
+                }
+            }
+        }
+    }
+
+    // MARK: - library
+
+    /// The one place the app writes into a photographs' folder other than an
+    /// export (`FolderRecord`).
+    private var librarySection: some View {
+        SettingsGroup(L("Library", zh: "图库")) {
+            SettingsRows {
+                VStack(spacing: 4) {
+                    ToggleRow(label: L("Keep a record in each folder", zh: "在每个文件夹中保存记录"),
+                              isOn: $folderRecord)
+                    caption(L("Write \(FolderRecord.fileName) beside the photographs: the flags, the filter, the photo that was open and every photo's edits. Choosing the folder again — on this Mac or another, or after the folder was moved — brings all of it back. The app's own store is kept either way; turning this off stops writing the file and stops reading it.", zh: "在照片旁写入 \(FolderRecord.fileName)：旗标、筛选条件、上次打开的照片以及每张照片的编辑。再次选择该文件夹时（无论在本机还是另一台 Mac 上，或文件夹被移动之后）都会恢复这些内容。应用自身的存储始终保留；关闭此项后既不写入也不读取该文件。"))
                 }
             }
         }

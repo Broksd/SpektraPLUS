@@ -441,7 +441,30 @@ struct Sidecar: Codable, Equatable, Sendable {
         return !exists(candidate.path)
     }
 
+    /// The frame's settings: the application store's copy, or the photo
+    /// folder's record (`FolderRecord`) when that one was written later —
+    /// edits made on another Mac, or before the store was cleared. A copy
+    /// taken from the folder is written into the store, so everything that
+    /// reads or watches the store (the CLI, `SidecarWatch`) sees it too.
     static func load(for image: URL) -> Sidecar? {
+        let stored = loadFromStore(for: image)
+        guard let photo = FolderRecordStore.photo(for: image), var fromFolder = photo.sidecar else {
+            return stored
+        }
+        if stored != nil {
+            // The store is written first on every save and the folder a moment
+            // after, so only a folder copy clearly newer than the store's file
+            // is an edit the store has not seen.
+            guard let edited = photo.edited,
+                  let storeDate = (try? FileManager.default.attributesOfItem(atPath: url(for: image).path))?[.modificationDate] as? Date,
+                  edited > storeDate.addingTimeInterval(1) else { return stored }
+        }
+        fromFolder.source = identity(of: image)
+        try? fromFolder.save(for: image)
+        return fromFolder
+    }
+
+    private static func loadFromStore(for image: URL) -> Sidecar? {
         // 1. Where this frame's settings are if it has not moved.
         if let data = try? Data(contentsOf: url(for: image)),
            let sidecar = try? JSONDecoder().decode(Sidecar.self, from: data) {
@@ -502,6 +525,7 @@ struct Sidecar: Codable, Equatable, Sendable {
         try? FileManager.default.removeItem(at: url(for: image))
         try? FileManager.default.removeItem(at: neighbourURL(for: image))
         noteRemoval(of: url(for: image))
+        FolderRecordStore.noteRemoval(for: image)
     }
 
     func save(for image: URL) throws {
@@ -516,6 +540,9 @@ struct Sidecar: Codable, Equatable, Sendable {
         enc.outputFormatting = [.prettyPrinted, .sortedKeys]
         try enc.encode(out).write(to: destination, options: .atomic)
         Sidecar.noteWrite(out.source ?? Sidecar.identity(of: image), at: destination)
+        // The photographs' own folder keeps a copy (`FolderRecord`), when the
+        // person has that on. Never a reason for the save to fail.
+        FolderRecordStore.noteSave(out, for: image)
     }
 }
 

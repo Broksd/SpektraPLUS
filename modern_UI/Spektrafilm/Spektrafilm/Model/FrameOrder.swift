@@ -36,13 +36,19 @@ enum FrameOrder {
         guard let data = try? JSONEncoder().encode(names) else { return }
         try? FileManager.default.createDirectory(at: storeDirectory, withIntermediateDirectories: true)
         try? data.write(to: url(for: folder), options: .atomic)
+        // And in the folder's own record, so the order travels with it.
+        FolderRecordStore.update(folder) { $0.order = names }
     }
 
     /// `listed` in the order kept for its folder.
     nonisolated static func applied(to listed: [Frame]) -> [Frame] {
-        guard let folder = folder(of: listed.map(\.id)),
-              let data = try? Data(contentsOf: url(for: folder)),
-              let names = try? JSONDecoder().decode([String].self, from: data) else { return listed }
+        guard let folder = folder(of: listed.map(\.id)) else { return listed }
+        if let data = try? Data(contentsOf: url(for: folder)),
+           let names = try? JSONDecoder().decode([String].self, from: data) {
+            return ordered(listed, by: names)
+        }
+        // A folder dragged into order on another Mac carries it in its record.
+        guard let names = FolderRecordStore.read(folder)?.order else { return listed }
         return ordered(listed, by: names)
     }
 
