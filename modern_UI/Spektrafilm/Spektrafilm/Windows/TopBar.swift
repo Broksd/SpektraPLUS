@@ -59,8 +59,9 @@ struct TopBar: View {
             // window buttons need — they are on this row whenever the left
             // rail is not (Windows/TrafficLights.swift).
             Spacer()
-                .frame(width: session.leftCollapsed ? Theme.Metric.barLeadingWithButtons
-                                                    : Theme.Metric.barPadding - 14)
+                .frame(width: session.leftCollapsed && !session.showsFolderBrowser
+                                  ? Theme.Metric.barLeadingWithButtons
+                                  : Theme.Metric.barPadding - 14)
             // v4's order: the rail toggle, the file, the tools, then the one
             // action that prints the frame and the view that compares it.
             SidebarToggle(edge: .leading, collapsed: $session.leftCollapsed)

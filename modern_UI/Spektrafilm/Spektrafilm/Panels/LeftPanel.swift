@@ -65,7 +65,10 @@ struct LeftPanel: View {
             // The three window buttons live here (Windows/TrafficLights.swift).
             // They are *placed* in window coordinates, so this is a reservation
             // and not a container.
-            Spacer().frame(width: Theme.Metric.trafficLightClearance)
+            // With the folder browser open the buttons sit on its header
+            // instead, and this one starts at the rail's own inset.
+            Spacer().frame(width: session.showsFolderBrowser ? Theme.Metric.rowInset
+                                                             : Theme.Metric.trafficLightClearance)
             Text(L(.railFilmAndPrint))
                 .font(Theme.Font.railTitle)
                 .foregroundStyle(Theme.text)
