@@ -524,8 +524,11 @@ inside a field. `TypingKeyGuard` is a local key monitor that sends typing keys
   rail's Folders page; tabs in the rail's header switch between it and Film
   and Print (`Session.leftRailPage`). It is a page and not a column because
   the top bar alone needs ≈ 821 pt: a fourth column made the window wider
-  than a 1470 pt screen and the HStack overflowed both edges. It lists home,
-  Pictures, mounted volumes and added folders, lazily. A click is
+  than a 1470 pt screen and the HStack overflowed both edges. It lists, lazily,
+  Places (home, Pictures, mounted volumes) and Favorites
+  (`library.favorites`, which took over the old added places in
+  `library.roots`). Rows are keyed by section and path, so one folder can be
+  in both and expand in one only. A click is
   `Session.open(urls: [folder])`; `Session.libraryFolder` is the folder on
   screen. Snapshot captures show Film and Print only.
 - **Import** (`Import/PhotoImporter.swift`, `Panels/ImportSheet.swift`, ⇧⌘I)

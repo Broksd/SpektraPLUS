@@ -1,7 +1,8 @@
 //  FolderBrowser.swift — the folder tree, the left rail's Folders page.
 //
-//  A list of places (the home folder, Pictures, every mounted disk and card,
-//  and any folder the person adds), each one opening into its subfolders.
+//  Two lists, each folder opening into its subfolders: Places (the home
+//  folder, Pictures, every mounted disk and card) and Favorites (folders the
+//  person keeps — a NAS photo library, say — remembered between launches).
 //  A click on a folder opens it: its photographs fill the filmstrip and its
 //  record (`FolderRecord`) brings back the flags, the filter, the frame that
 //  was open and every edit. A folder that has a record carries a small dot.
@@ -18,21 +19,39 @@ import SwiftUI
 @MainActor
 @Observable
 final class FolderTree {
+    /// The folders the person added before Favorites existed; read once and
+    /// moved into `favoritesKey`.
     nonisolated static let rootsKey = "library.roots"
+    nonisolated static let favoritesKey = "library.favorites"
     nonisolated static let expandedKey = "library.expanded"
+    nonisolated static let foldedKey = "library.foldedSections"
+
+    /// Places: the home folder, Pictures and every mounted disk, found anew
+    /// each launch. Favorites: the person's own folders — a NAS photo
+    /// library, a project — kept between launches.
+    enum Section: String, CaseIterable { case places, favorites }
 
     struct Row: Identifiable, Equatable {
         let url: URL
         let depth: Int
-        var id: String { url.path }
+        let section: Section
+        /// One folder can be in both sections, so a row is named by both.
+        var id: String { FolderTree.rowID(url, section) }
     }
 
-    enum RootKind { case home, pictures, volume, added }
+    enum RootKind { case home, pictures, volume, favorite }
+
+    nonisolated static func rowID(_ url: URL, _ section: Section) -> String {
+        "\(section.rawValue):\(url.standardizedFileURL.path)"
+    }
 
     private let defaults: UserDefaults
-    /// The places at the top of the tree.
-    private(set) var roots: [(url: URL, kind: RootKind)] = []
+    private(set) var places: [(url: URL, kind: RootKind)] = []
+    private(set) var favorites: [URL] = []
+    /// Expanded rows by `rowID`, so a folder opened under Favorites does not
+    /// open the same folder deep in the home tree.
     private(set) var expanded: Set<String>
+    private(set) var folded: Set<String>
     /// Subfolders by folder path, listed on first expansion. Caches, filled
     /// while the tree is drawn, so not observed: `revision` is what a view
     /// re-reads when one is dropped.
@@ -43,27 +62,26 @@ final class FolderTree {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         expanded = Set(defaults.stringArray(forKey: Self.expandedKey) ?? [])
+        folded = Set(defaults.stringArray(forKey: Self.foldedKey) ?? [])
+        if defaults.object(forKey: Self.favoritesKey) == nil {
+            defaults.set(defaults.stringArray(forKey: Self.rootsKey) ?? [], forKey: Self.favoritesKey)
+        }
         reloadRoots()
-    }
-
-    /// The person's own places, kept between launches.
-    private var added: [URL] {
-        (defaults.stringArray(forKey: Self.rootsKey) ?? []).map { URL(fileURLWithPath: $0, isDirectory: true) }
     }
 
     func reloadRoots() {
         let fm = FileManager.default
         var out: [(url: URL, kind: RootKind)] = []
-        let home = fm.homeDirectoryForCurrentUser
-        out.append((home, .home))
+        out.append((fm.homeDirectoryForCurrentUser, .home))
         if let pictures = fm.urls(for: .picturesDirectory, in: .userDomainMask).first {
             out.append((pictures, .pictures))
         }
         let volumes = fm.mountedVolumeURLs(includingResourceValuesForKeys: [.volumeIsBrowsableKey],
                                            options: [.skipHiddenVolumes]) ?? []
         for v in volumes where v.path != "/" { out.append((v, .volume)) }
-        for a in added where !out.contains(where: { $0.url.path == a.path }) { out.append((a, .added)) }
-        roots = out
+        places = out
+        favorites = (defaults.stringArray(forKey: Self.favoritesKey) ?? [])
+            .map { URL(fileURLWithPath: $0, isDirectory: true) }
     }
 
     /// Forget every listing: folders made or removed in Finder show up.
@@ -74,21 +92,37 @@ final class FolderTree {
         reloadRoots()
     }
 
-    var rows: [Row] {
+    func roots(in section: Section) -> [URL] {
+        section == .places ? places.map(\.url) : favorites
+    }
+
+    func rows(in section: Section) -> [Row] {
         _ = revision
+        guard !isFolded(section) else { return [] }
         var out: [Row] = []
         func walk(_ url: URL, _ depth: Int) {
-            out.append(Row(url: url, depth: depth))
-            guard expanded.contains(url.path) else { return }
+            out.append(Row(url: url, depth: depth, section: section))
+            guard isExpanded(url, in: section) else { return }
             for c in subfolders(of: url) { walk(c, depth + 1) }
         }
-        for r in roots { walk(r.url, 0) }
+        for r in roots(in: section) { walk(r, 0) }
         return out
     }
 
-    func kind(of url: URL) -> RootKind? { roots.first { $0.url.path == url.path }?.kind }
+    /// What a top-level row is; nil below the top.
+    func kind(of row: Row) -> RootKind? {
+        guard row.depth == 0 else { return nil }
+        return row.section == .favorites ? .favorite : places.first { $0.url.path == row.url.path }?.kind
+    }
 
-    func isExpanded(_ url: URL) -> Bool { expanded.contains(url.path) }
+    func isFolded(_ section: Section) -> Bool { folded.contains(section.rawValue) }
+
+    func toggleFolded(_ section: Section) {
+        if folded.contains(section.rawValue) { folded.remove(section.rawValue) } else { folded.insert(section.rawValue) }
+        defaults.set(Array(folded), forKey: Self.foldedKey)
+    }
+
+    func isExpanded(_ url: URL, in section: Section) -> Bool { expanded.contains(Self.rowID(url, section)) }
 
     /// Whether a disclosure arrow is worth drawing: unknown until listed, so
     /// an unlisted folder gets one.
@@ -97,25 +131,31 @@ final class FolderTree {
         return !listed.isEmpty
     }
 
-    func toggle(_ url: URL) {
-        if expanded.contains(url.path) { expanded.remove(url.path) } else { expanded.insert(url.path) }
+    func toggle(_ url: URL, in section: Section) {
+        let id = Self.rowID(url, section)
+        if expanded.contains(id) { expanded.remove(id) } else { expanded.insert(id) }
         defaults.set(Array(expanded), forKey: Self.expandedKey)
     }
 
-    /// Open every ancestor of `folder` that sits under one of the roots, so
-    /// the open folder can be seen in the tree.
-    func reveal(_ folder: URL) {
+    /// Open every ancestor of `folder` under the deepest root that holds it
+    /// — a favorite before a place — and say which row is the folder's.
+    @discardableResult
+    func reveal(_ folder: URL) -> String? {
         let path = folder.standardizedFileURL.path
-        guard let root = roots.map({ $0.url }).filter({ path.hasPrefix($0.path + "/") })
-                .max(by: { $0.path.count < $1.path.count }) else { return }
-        var cursor = folder.standardizedFileURL.deletingLastPathComponent()
-        var changed = false
-        while cursor.path.count >= root.path.count {
-            if !expanded.contains(cursor.path) { expanded.insert(cursor.path); changed = true }
-            if cursor.path == root.path { break }
-            cursor = cursor.deletingLastPathComponent()
+        for section in [Section.favorites, .places] {
+            let holders = roots(in: section).filter { path == $0.standardizedFileURL.path || path.hasPrefix($0.standardizedFileURL.path + "/") }
+            guard let root = holders.max(by: { $0.path.count < $1.path.count }) else { continue }
+            if isFolded(section) { toggleFolded(section) }
+            var cursor = folder.standardizedFileURL.deletingLastPathComponent()
+            while cursor.path.count >= root.standardizedFileURL.path.count, path != root.standardizedFileURL.path {
+                expanded.insert(Self.rowID(cursor, section))
+                if cursor.path == root.standardizedFileURL.path { break }
+                cursor = cursor.deletingLastPathComponent()
+            }
+            defaults.set(Array(expanded), forKey: Self.expandedKey)
+            return Self.rowID(folder, section)
         }
-        if changed { defaults.set(Array(expanded), forKey: Self.expandedKey) }
+        return nil
     }
 
     func subfolders(of url: URL) -> [URL] {
@@ -147,28 +187,35 @@ final class FolderTree {
         revision += 1
     }
 
-    func addRoot(_ url: URL) {
-        var paths = defaults.stringArray(forKey: Self.rootsKey) ?? []
-        guard !paths.contains(url.path) else { return }
-        paths.append(url.path)
-        defaults.set(paths, forKey: Self.rootsKey)
+    func isFavorite(_ url: URL) -> Bool {
+        favorites.contains { $0.standardizedFileURL.path == url.standardizedFileURL.path }
+    }
+
+    func addFavorite(_ url: URL) {
+        var paths = defaults.stringArray(forKey: Self.favoritesKey) ?? []
+        let path = url.standardizedFileURL.path
+        guard !paths.contains(path) else { return }
+        paths.append(path)
+        defaults.set(paths, forKey: Self.favoritesKey)
+        if isFolded(.favorites) { toggleFolded(.favorites) }
         reloadRoots()
     }
 
-    func removeRoot(_ url: URL) {
-        let paths = (defaults.stringArray(forKey: Self.rootsKey) ?? []).filter { $0 != url.path }
-        defaults.set(paths, forKey: Self.rootsKey)
+    func removeFavorite(_ url: URL) {
+        let path = url.standardizedFileURL.path
+        let paths = (defaults.stringArray(forKey: Self.favoritesKey) ?? []).filter { $0 != path }
+        defaults.set(paths, forKey: Self.favoritesKey)
         reloadRoots()
     }
 
-    func chooseRoot() {
+    func chooseFavorite() {
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = true
-        panel.message = L("Add folders to the folder browser.", zh: "把文件夹添加到文件夹浏览器。")
+        panel.message = L("Add folders to Favorites.", zh: "把文件夹加入收藏。")
         guard panel.runModal() == .OK else { return }
-        for url in panel.urls { addRoot(url) }
+        for url in panel.urls { addFavorite(url) }
     }
 }
 
@@ -182,11 +229,27 @@ struct FolderBrowser: View {
             ScrollViewReader { proxy in
                 ScrollView(.vertical, showsIndicators: true) {
                     LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(tree.rows) { row in
+                        sectionHeader(.places, L("Places", zh: "位置"))
+                        ForEach(tree.rows(in: .places)) { row in
                             FolderRow(row: row, tree: tree, session: session).id(row.id)
                         }
+                        sectionHeader(.favorites, L("Favorites", zh: "收藏")) {
+                            PanelIconButton(systemImage: "plus",
+                                            help: L("Add a folder to Favorites", zh: "添加文件夹到收藏")) {
+                                tree.chooseFavorite()
+                            }
+                        }
+                        .padding(.top, 6)
+                        ForEach(tree.rows(in: .favorites)) { row in
+                            FolderRow(row: row, tree: tree, session: session).id(row.id)
+                        }
+                        if tree.favorites.isEmpty && !tree.isFolded(.favorites) {
+                            Text(L("Right-click a folder to add it here.", zh: "在文件夹上右键即可加入收藏。"))
+                                .font(Theme.Font.small).foregroundStyle(Theme.dim)
+                                .padding(.leading, 26).padding(.vertical, 4)
+                        }
                     }
-                    .padding(.vertical, 6)
+                    .padding(.bottom, 6)
                 }
                 // A flag or an edit can be what first writes the folder's
                 // record: its dot appears without a refresh.
@@ -196,11 +259,16 @@ struct FolderBrowser: View {
                 .onChange(of: session.frameStates) { _, _ in
                     if let folder = session.libraryFolder { tree.recordChanged(in: folder) }
                 }
+                // A folder opened while this page was not on screen.
+                .onAppear {
+                    guard let folder = session.libraryFolder, let id = tree.reveal(folder) else { return }
+                    DispatchQueue.main.async { proxy.scrollTo(id, anchor: .center) }
+                }
                 .onChange(of: session.libraryFolder) { _, folder in
                     guard let folder else { return }
-                    tree.reveal(folder)
+                    let id = tree.reveal(folder)
                     tree.recordChanged(in: folder)
-                    proxy.scrollTo(folder.standardizedFileURL.path, anchor: .center)
+                    if let id { proxy.scrollTo(id, anchor: .center) }
                 }
             }
             Hairline()
@@ -208,27 +276,37 @@ struct FolderBrowser: View {
         }
     }
 
-    /// The places' own tools, under the rail's tabs.
+    /// A section's title; a click folds it.
+    private func sectionHeader<Trailing: View>(_ section: FolderTree.Section, _ title: String,
+                                               @ViewBuilder trailing: () -> Trailing = { EmptyView() }) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: "chevron.right")
+                .font(.system(size: 7, weight: .bold))
+                .foregroundStyle(Theme.dim)
+                .rotationEffect(.degrees(tree.isFolded(section) ? 0 : 90))
+                .frame(width: 10)
+            Text(title).font(Theme.Font.small).foregroundStyle(Theme.dim)
+            Spacer(minLength: 0)
+            trailing()
+        }
+        .padding(.leading, 10)
+        .padding(.trailing, 6)
+        .frame(height: 24)
+        .contentShape(Rectangle())
+        .onTapGesture { withAnimation(.easeOut(duration: 0.12)) { tree.toggleFolded(section) } }
+    }
+
+    /// The browser's own tools, under the rail's tabs.
     private var toolbar: some View {
         HStack(spacing: 0) {
-            Text(L("Places", zh: "位置"))
-                .font(Theme.Font.small)
-                .foregroundStyle(Theme.dim)
-                .padding(.leading, 12)
             Spacer(minLength: 0)
             PanelIconButton(systemImage: "arrow.clockwise",
                             help: L("Refresh the folder list", zh: "刷新文件夹列表")) { tree.refresh() }
-            // Import, where the browser's + used to add a place: adding a
-            // place is the menu on this row, and on any folder in the tree.
             PanelIconButton(systemImage: "square.and.arrow.down.on.square",
                             help: L("Import Photos… (⇧⌘I)", zh: "导入照片…（⇧⌘I）")) { session.showImport = true }
                 .padding(.trailing, 6)
         }
         .frame(height: 28)
-        .contentShape(Rectangle())
-        .contextMenu {
-            Button(L("Add a Place…", zh: "添加位置…")) { tree.chooseRoot() }
-        }
     }
 }
 
@@ -237,14 +315,15 @@ private struct FolderRow: View {
     @Bindable var tree: FolderTree
     @Bindable var session: Session
 
-    private var isOpen: Bool { session.libraryFolder?.path == row.url.standardizedFileURL.path }
+    private var isOpen: Bool { session.libraryFolder?.standardizedFileURL.path == row.url.standardizedFileURL.path }
 
     private var icon: String {
-        switch tree.kind(of: row.url) {
+        switch tree.kind(of: row) {
         case .home?: "house"
         case .pictures?: "photo.on.rectangle"
         case .volume?: "externaldrive"
-        case .added?, nil: isOpen ? "folder.fill" : "folder"
+        case .favorite?: "star"
+        case nil: isOpen ? "folder.fill" : "folder"
         }
     }
 
@@ -255,11 +334,11 @@ private struct FolderRow: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            Button { withAnimation(.easeOut(duration: 0.12)) { tree.toggle(row.url) } } label: {
+            Button { withAnimation(.easeOut(duration: 0.12)) { tree.toggle(row.url, in: row.section) } } label: {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 8, weight: .semibold))
                     .foregroundStyle(Theme.dim)
-                    .rotationEffect(.degrees(tree.isExpanded(row.url) ? 90 : 0))
+                    .rotationEffect(.degrees(tree.isExpanded(row.url, in: row.section) ? 90 : 0))
                     .frame(width: 14, height: 20)
                     .contentShape(Rectangle())
             }
@@ -290,15 +369,15 @@ private struct FolderRow: View {
             guard !session.batchExporting else { return }
             session.flushSave()
             session.open(urls: [row.url])
-            if !tree.isExpanded(row.url) { tree.toggle(row.url) }
+            if !tree.isExpanded(row.url, in: row.section) { tree.toggle(row.url, in: row.section) }
         }
         .help(row.url.path)
         .contextMenu {
             Button(L(.helpRevealInFinder)) { NSWorkspace.shared.activateFileViewerSelecting([row.url]) }
-            if tree.kind(of: row.url) == .added {
-                Button(L("Remove from List", zh: "从列表移除")) { tree.removeRoot(row.url) }
-            } else if tree.kind(of: row.url) == nil {
-                Button(L("Add to List", zh: "添加到列表")) { tree.addRoot(row.url) }
+            if tree.isFavorite(row.url) {
+                Button(L("Remove from Favorites", zh: "从收藏移除")) { tree.removeFavorite(row.url) }
+            } else {
+                Button(L("Add to Favorites", zh: "加入收藏")) { tree.addFavorite(row.url) }
             }
         }
     }

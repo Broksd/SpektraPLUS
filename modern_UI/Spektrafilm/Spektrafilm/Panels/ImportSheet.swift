@@ -87,7 +87,17 @@ struct ImportSheet: View {
             }
             row(L("To", zh: "导入到")) {
                 pathLine(destination, empty: L("Choose a destination", zh: "请选择目标文件夹"))
-                Button(L("Choose…", zh: "选择…")) { chooseDestination() }.disabled(running)
+                // Favorites first: the library folder is usually one of them.
+                Menu(L("Choose…", zh: "选择…")) {
+                    ForEach(tree.favorites, id: \.path) { f in
+                        Button(FileManager.default.displayName(atPath: f.path)) { setDestination(f) }
+                            .help(f.path)
+                    }
+                    if !tree.favorites.isEmpty { Divider() }
+                    Button(L("Other Folder…", zh: "其他文件夹…")) { chooseDestination() }
+                }
+                .fixedSize()
+                .disabled(running)
             }
             row(L("Folders", zh: "分文件夹")) {
                 Picker("", selection: $layout) {
@@ -189,10 +199,8 @@ struct ImportSheet: View {
     }
 
     private func open(_ folder: URL) {
-        if let d = destination, tree.kind(of: d) == nil,
-           !tree.roots.contains(where: { d.standardizedFileURL.path.hasPrefix($0.url.standardizedFileURL.path + "/") }) {
-            tree.addRoot(d)
-        }
+        // The library folder (a NAS `lightroom`, say) stays one click away.
+        if let d = destination { tree.addFavorite(d) }
         tree.refresh()
         session.flushSave()
         session.open(urls: [folder])
@@ -216,6 +224,10 @@ struct ImportSheet: View {
     private func chooseDestination() {
         guard let url = pickFolder(L("Choose where the photos are copied to.", zh: "选择照片复制到哪里。"),
                                    canCreate: true) else { return }
+        setDestination(url)
+    }
+
+    private func setDestination(_ url: URL) {
         destination = url
         UserDefaults.standard.set(url.path, forKey: Self.destinationKey)
     }

@@ -49,13 +49,18 @@ xattr -d -r com.apple.quarantine /Applications/SpektraLab.app
 
 The **Folders** tab at the top of the left rail (or Library → Show Folders,
 ⇧⌘L, which also switches back to Film and Print) lists your home
-folder, Pictures, every mounted disk and card, and any folder you add with
-**+**. Click a folder to open its photographs in the filmstrip.
+folder, Pictures and every mounted disk and card under **Places**, and the
+folders you keep under **Favorites** (right-click any folder → Add to
+Favorites, or **+**), which are there every time the app opens. Click a
+folder to open its photographs in the filmstrip.
 
 **Import Photos** (the import button above the folder tree, or Library →
 Import Photos…, ⇧⌘I) copies the open folder's photos — all of them or the
 selected ones — or another folder or card, into a destination, filed by
-capture date (`2026/2026-11-07` and other layouts). It only copies: the
+capture date (`2026/2026-11-07`, as Lightroom Classic files them, and other
+layouts). Pick the destination from Favorites — a NAS `lightroom` folder, say
+— and every import lands in its year and day folders; the destination is
+added to Favorites. It only copies: the
 originals are never moved or deleted, and a file already at the destination
 is skipped.
 
