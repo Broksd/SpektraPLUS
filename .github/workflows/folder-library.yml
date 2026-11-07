@@ -1,0 +1,83 @@
+# Build and test the folder-library branch on a hosted Mac.
+#
+# A working aid for this branch, not part of the change itself: it
+# regenerates the Xcode project (the branch adds Swift files), builds the app,
+# and runs the unit tests, then turns compiler errors and failing tests into
+# annotations so they can be read without the full log. Drop this file before
+# proposing the branch upstream; build.yml is the upstream gate.
+
+name: Folder library
+
+on:
+  push:
+    branches: [feature/folder-library]
+  workflow_dispatch:
+
+concurrency:
+  group: folder-library-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: macos-26          # arm64; Xcode 26.6 is the image default
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app
+
+      - name: Metal toolchain
+        run: |
+          xcrun -sdk macosx metal --version \
+            || xcodebuild -downloadComponent MetalToolchain
+
+      - name: Engine kernels and resources
+        run: engine/build.sh bundle
+
+      - name: Regenerate the Xcode project
+        working-directory: modern_UI/Spektrafilm
+        run: |
+          python3 Tools/gen-project.py
+          git diff --stat -- Spektrafilm.xcodeproj
+
+      - name: Build the app
+        working-directory: modern_UI/Spektrafilm
+        run: |
+          set -o pipefail
+          xcodebuild -project Spektrafilm.xcodeproj -scheme Spektrafilm \
+            -configuration Debug -derivedDataPath build/DerivedData build 2>&1 | tee build.log
+
+      - name: New tests (FolderRecordTests)
+        working-directory: modern_UI/Spektrafilm
+        run: |
+          set -o pipefail
+          xcodebuild -project Spektrafilm.xcodeproj -scheme SpektrafilmTests \
+            -configuration Debug -derivedDataPath build/DerivedData test \
+            -only-testing:SpektrafilmTests/FolderRecordTests 2>&1 | tee test-new.log
+
+      - name: Full test suite
+        working-directory: modern_UI/Spektrafilm
+        run: |
+          set -o pipefail
+          xcodebuild -project Spektrafilm.xcodeproj -scheme SpektrafilmTests \
+            -configuration Debug -derivedDataPath build/DerivedData test 2>&1 | tee test-all.log
+
+      - name: Report errors as annotations
+        if: always()
+        working-directory: modern_UI/Spektrafilm
+        run: |
+          for f in build.log test-new.log test-all.log; do
+            [ -f "$f" ] || continue
+            grep -E "error: |: error:|failed \(|XCTAssert.*failed|Test Case .* failed|Executed [0-9]+ tests" "$f" \
+              | grep -v "^\s*$" | sort -u | head -40 | while IFS= read -r line; do
+                msg="${line//'%'/'%25'}"
+                echo "::error title=$f::${msg:0:900}"
+              done
+          done
