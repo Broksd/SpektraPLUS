@@ -1465,7 +1465,13 @@ final class Session: CanvasHost {
             return
         }
         let files = Library.frames(from: urls)
-        guard !files.isEmpty else { status = "Nothing openable in the selection."; return }
+        // A folder with no photographs of its own — a year folder holding
+        // only day folders, a new empty one — still opens, to nothing, so the
+        // browser can show where you are; the strip says it is empty.
+        var isFolder: ObjCBool = false
+        let oneFolder = urls.count == 1
+            && FileManager.default.fileExists(atPath: urls[0].path, isDirectory: &isFolder) && isFolder.boolValue
+        guard !files.isEmpty || oneFolder else { status = "Nothing openable in the selection."; return }
         let new = FrameOrder.applied(to: Self.withPairs(files))
         if let selection, !new.contains(where: { $0.id == selection }) {
             enqueuePrintWriteback(for: selection)

@@ -72,7 +72,8 @@ struct Filmstrip: View {
             // taken when the strip was empty and was not re-evaluated when it
             // filled. Opacity depends on the same value every pass, so it
             // cannot go stale.
-            Text(L(.statusEmptyFilmstrip))
+            Text(session.libraryFolder != nil ? L("No photos in this folder", zh: "此文件夹里没有照片")
+                                              : L(.statusEmptyFilmstrip))
                 .font(Theme.Font.label).foregroundStyle(Theme.dim)
                 .opacity(session.frames.isEmpty ? 1 : 0)
                 .allowsHitTesting(false)

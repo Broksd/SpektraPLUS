@@ -215,6 +215,20 @@ final class FolderRecordTests: XCTestCase {
         XCTAssertFalse(s.showsFolderBrowser, "a capture shows Film and Print")
     }
 
+    func testAFolderWithoutPhotographsStillOpens() throws {
+        let s = try session()
+        let photos = try makeFolder(["a.png", "b.png"])
+        s.open(urls: [photos])
+        XCTAssertEqual(s.frames.count, 2)
+        // A year folder: only day folders inside.
+        let year = try makeFolder([])
+        try FileManager.default.createDirectory(at: year.appending(path: "2026-01-10"), withIntermediateDirectories: true)
+        s.open(urls: [year])
+        XCTAssertEqual(s.libraryFolder, year.standardizedFileURL, "the browser shows it as the open folder")
+        XCTAssertTrue(s.frames.isEmpty, "the last folder's photographs are not left on screen")
+        XCTAssertNil(s.selection)
+    }
+
     func testFlagFilterAdmits() {
         XCTAssertTrue(FlagFilter.all.admits(.rejected))
         XCTAssertTrue(FlagFilter.unflagged.admits(nil))

@@ -56,7 +56,8 @@ struct PhotoGrid: View {
         }
         .background(Theme.ground)
         .overlay {
-            Text(session.frames.isEmpty ? L(.statusEmptyFilmstrip)
+            Text(session.frames.isEmpty ? (session.libraryFolder != nil ? L("No photos in this folder", zh: "此文件夹里没有照片")
+                                                                        : L(.statusEmptyFilmstrip))
                                         : L("No photos match the filter", zh: "没有符合筛选条件的照片"))
                 .font(Theme.Font.label).foregroundStyle(Theme.dim)
                 .opacity(session.visibleFrames.isEmpty ? 1 : 0)
