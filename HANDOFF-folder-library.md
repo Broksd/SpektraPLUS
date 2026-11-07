@@ -31,7 +31,7 @@
 - GitHub CI（`.github/workflows/folder-library.yml`）情况：
   - 第 1 次：编译错误 `SpektrafilmApp.swift:289 extra argument in call`。原因是 `EditorCommands` 原本已有 10 个菜单组，加上图库菜单超过了 `CommandsBuilder` 的上限。已在 `afe6df1` 修复。
   - 第 2 次：失败，退出码 65，但汇报步骤有 bug，没拿到具体错误。从退出码看，可能是程序已编译通过、失败出在测试阶段，尚未确认。
-  - 第 3 次（`5de8ffc`）：交接时还在运行，结果可在 https://github.com/Broksd/SpektraLab/actions 查看。
+  - 第 3 次（`5de8ffc`）：**程序编译通过**；新测试 11 个里 10 个通过，1 个失败：`testARecordRoundTripsAndToleratesMissingFields` 用 `==` 比较整条记录，但 ISO 8601 日期会丢掉秒的小数部分，Sidecar 的编解码也不是完全对等。之后已改成逐字段比较。完整测试套件这次没跑完（被下一次推送取消），还需要在本地跑一遍。
 
 ## 改动的文件
 

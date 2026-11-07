@@ -44,7 +44,17 @@ final class FolderRecordTests: XCTestCase {
         record.log("flag", file: "b.png")
         let data = try FolderRecord.encoder().encode(record)
         let back = try FolderRecord.decoder().decode(FolderRecord.self, from: data)
-        XCTAssertEqual(back, record)
+        // Field by field, not `==`: ISO 8601 drops the history entry's
+        // fractions of a second, and the sidecar's own codec is not an
+        // identity for every field (see `Session.flushSave`).
+        XCTAssertEqual(back.format, FolderRecord.formatName)
+        XCTAssertEqual(back.filter, .flagged)
+        XCTAssertEqual(back.current, "b.png")
+        XCTAssertEqual(back.flag(of: "a.png"), .rejected)
+        XCTAssertEqual(back.photos["a.png"]?.edited, Date(timeIntervalSince1970: 0))
+        XCTAssertNotNil(back.photos["a.png"]?.sidecar)
+        XCTAssertEqual(back.history.map(\.file), ["b.png"])
+        XCTAssertEqual(back.history.map(\.action), ["flag"])
 
         let sparse = try FolderRecord.decoder().decode(FolderRecord.self, from: Data(#"{"photos":{"x.NEF":{"flag":"flagged"}}}"#.utf8))
         XCTAssertEqual(sparse.filter, .all)
