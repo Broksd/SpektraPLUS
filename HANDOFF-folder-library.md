@@ -50,6 +50,13 @@
 | `modern_UI/Spektrafilm/SpektrafilmTests/FolderRecordTests.swift`（新） | 记录读写、历史合并、旗标与筛选恢复、P/X 开关、⌘A、跨存储读取、新旧比较、重置保留旗标、排序、关闭开关 |
 | `ARCHITECTURE.md`、`AGENTS.md`、`README.md`、`README.zh-CN.md` | 文档 |
 
+## 2026-11-07 本地追加
+
+- 左栏的“胶片与相纸”页去掉了导航器。
+- 画布和胶片条之间加了切换条：单张（E）/ 网格（G），网格模式下可调缩略图大小（`PhotoGrid.swift`）。
+- 文件夹页的 + 改成了导入（`PhotoImporter.swift`、`ImportSheet.swift`，⇧⌘I）：可从当前文件夹（全部或选中的照片）或其他文件夹、存储卡导入，按拍摄日期分文件夹，只复制不删除。“添加位置”移到了“位置”那一行的右键菜单。
+- 网格和导入在同一个提交里（共用 Session、菜单和窗口的改动）。按上游“一个提交只做一件事”的规则，提 PR 前要拆开。
+
 ## 记录文件格式（`SpektraLab.folder.json`）
 
 ```json
