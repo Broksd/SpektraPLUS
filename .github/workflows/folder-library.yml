@@ -48,6 +48,7 @@ jobs:
           git diff --stat -- Spektrafilm.xcodeproj
 
       - name: Build the app
+        id: build
         working-directory: modern_UI/Spektrafilm
         run: |
           set -o pipefail
@@ -63,6 +64,7 @@ jobs:
             -only-testing:SpektrafilmTests/FolderRecordTests 2>&1 | tee test-new.log
 
       - name: Full test suite
+        if: always() && steps.build.outcome == 'success'
         working-directory: modern_UI/Spektrafilm
         run: |
           set -o pipefail
@@ -73,11 +75,12 @@ jobs:
         if: always()
         working-directory: modern_UI/Spektrafilm
         run: |
+          set +e +o pipefail
+          note() { local m="${2//'%'/'%25'}"; m="${m//$'\r'/}"; echo "::error title=$1::${m:0:900}"; }
           for f in build.log test-new.log test-all.log; do
-            [ -f "$f" ] || continue
-            grep -E "error: |: error:|failed \(|XCTAssert.*failed|Test Case .* failed|Executed [0-9]+ tests" "$f" \
-              | grep -v "^\s*$" | sort -u | head -40 | while IFS= read -r line; do
-                msg="${line//'%'/'%25'}"
-                echo "::error title=$f::${msg:0:900}"
-              done
+            [ -f "$f" ] || { note "$f" "not run"; continue; }
+            grep -E "error:|failed \(|failed:|FAILED|Executed [0-9]+ test|Test Suite .* (passed|failed)|✘|issue" "$f" \
+              | sort -u | head -45 | while IFS= read -r line; do note "$f" "$line"; done
+            note "$f (tail)" "$(tail -n 25 "$f" | tr '\n' '|')"
           done
+          exit 0
