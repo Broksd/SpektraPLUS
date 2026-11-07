@@ -66,6 +66,11 @@ ENGINE = ROOT.parents[1] / "engine"
 # panel and the licence README say. The data folders, `SpektraLab.folder.json`
 # and the agent id keep the old name so nothing already saved goes missing.
 #
+# Spektraplus (2026-11-07) has its own: `com.broksd.spektraplus`, so a copy of
+# official SpektraLab and this fork are two apps to macOS, and nothing passes
+# for the official build. Its version counts from 0.1.0. The paragraph below
+# is upstream's reasoning for keeping theirs.
+#
 # `BUNDLE_ID` deliberately still reads "filmify": it is the identity macOS
 # Gatekeeper/notarisation already has on record for this app, and changing it
 # would orphan that history and any installed copy's app data. Renaming the
@@ -74,7 +79,7 @@ ENGINE = ROOT.parents[1] / "engine"
 APP = "Spektrafilm"
 PRODUCT_NAME = "Spektraplus"
 TESTS = "SpektrafilmTests"
-BUNDLE_ID = "com.hanze.filmify"
+BUNDLE_ID = "com.broksd.spektraplus"
 MACOS = "15.0"
 
 # The version, in one place.
@@ -83,8 +88,8 @@ MACOS = "15.0"
 # they were still `0.2` and `2` — nothing derived them and nothing noticed.
 # They are build settings now and the plist references them, so a release
 # bumps one line here (HANDOFF-DISTRIBUTION §2.6).
-MARKETING_VERSION = "1.3.6"
-BUILD_NUMBER = "21"
+MARKETING_VERSION = "0.1.0"
+BUILD_NUMBER = "1"
 
 # Signing, from the environment, because a Developer ID certificate is not in
 # this repository and must not be.

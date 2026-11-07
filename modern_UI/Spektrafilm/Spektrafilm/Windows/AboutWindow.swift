@@ -46,7 +46,7 @@ struct AboutWindow: View {
     /// `bundle-licenses.sh`, then re-run that script.** GitHub redirects a
     /// renamed repository, so the old link keeps resolving and nothing breaks
     /// loudly — which is exactly why it needs saying.
-    static let sourceURL = "https://github.com/Broksd/SpektraLab"
+    static let sourceURL = "https://github.com/Broksd/SpektraPLUS"
     /// SpektraLab, which this application modifies. GPL-3.0 §5a: a modified
     /// work carries a notice that it is one.
     static let basedOnURL = "https://github.com/JamesQiu2005/SpektraLab"
@@ -62,6 +62,7 @@ struct AboutWindow: View {
 
     static let licences = [
         Licence(id: "SpektraLab-GPL-3.0.txt", title: "GNU GPL v3 — the application and the engine"),
+        Licence(id: "Spektraplus-CHANGES.txt", title: "What Spektraplus changed from SpektraLab"),
         Licence(id: "Profiles-and-LUTs-CC-BY-SA-4.0.txt", title: "CC BY-SA 4.0 — the profiles and the print LUTs"),
         Licence(id: "Profiles-and-LUTs-CHANGELOG.txt", title: "What this build changed about the profiles and LUTs"),
         Licence(id: "metal-cpp-Apache-2.0.txt", title: "Apache 2.0 — metal-cpp"),

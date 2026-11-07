@@ -12,6 +12,8 @@
 > profiles and the print model all come from it (CC BY-SA 4.0). Spektraplus
 > uses the spektrafilm engine; it is not affiliated with that project either.
 >
+> What changed, and when, is in [SPEKTRAPLUS-CHANGES.md](SPEKTRAPLUS-CHANGES.md).
+>
 > The rest of this README is SpektraLab's, and where it says SpektraLab it
 > describes what Spektraplus inherits.
 
@@ -44,19 +46,23 @@ filter pack — in about a second.
 
 ## Install
 
-Download the DMG from [spektralab.app](https://spektralab.app) or
-[Releases](https://github.com/JamesQiu2005/SpektraLab/releases), open it and
-drag SpektraLab to Applications. It is signed with a Developer ID and
-notarised by Apple, so it opens like any other app.
+Download the DMG from [Releases](https://github.com/Broksd/SpektraPLUS/releases),
+open it and drag Spektraplus to Applications. Apple silicon, macOS 15 or later.
 
-Apple silicon, macOS 15 or later.
+**Alpha builds are not signed with an Apple Developer ID or notarised**, so
+macOS stops the first launch. Allow it once, either way:
 
-Releases before 1.3.3 are ad-hoc signed. For one of those, clear the
-quarantine once:
+- right-click Spektraplus in Applications → Open → Open; or
+- in Terminal:
 
 ```bash
-xattr -d -r com.apple.quarantine /Applications/SpektraLab.app
+xattr -d -r com.apple.quarantine /Applications/Spektraplus.app
 ```
+
+Spektraplus and official SpektraLab are separate apps and can be installed side
+by side. They share the folder edits are kept in
+(`~/Library/Application Support/SpektraLab`), so an edit made in one is read by
+the other.
 
 ## Folders and flags
 
@@ -182,17 +188,13 @@ The macOS product described above has additional interface and display features.
 
 ## Contributing
 
-Pull requests are welcome. Three rules:
+Report Spektraplus problems and ideas at
+[Broksd/SpektraPLUS](https://github.com/Broksd/SpektraPLUS/issues), **not to
+official SpektraLab**, whose developers do not maintain this fork.
 
-- **Windows and Linux work goes to the `Windows_Linux` branch, never to `main`.**
-  `main` is the macOS product; a Windows- or Linux-related pull request against
-  it will be closed and asked to retarget.
-- **Split your work into reviewable commits.** One commit per change, each with
-  a message that says what it does and why. A single commit that dumps a whole
-  feature, a rename and a reformat together cannot be reviewed and will not be
-  merged.
-- **Respect the open-source community.** Keep the licences and credits intact
-  (see below), credit the work you build on, and be civil in issues and reviews.
+An improvement that would suit SpektraLab too can go upstream on its own terms,
+to [JamesQiu2005/SpektraLab](https://github.com/JamesQiu2005/SpektraLab): one
+change per commit, without Spektraplus's name or icon.
 
 ## Credits and licence
 
@@ -200,7 +202,8 @@ The film process model, its 28 measured color profiles and the print LUTs are
 [spektrafilm](https://github.com/andreavolpato/spektrafilm) by Andrea Volpato;
 4 new measured B&W profiles are by Hanze Qiu;
 SpektraLab is a native C++/Metal port of that engine and the application built
-around it.
+around it; Spektraplus is an unofficial, modified SpektraLab that adds folder
+browsing, favorites, flags, a folder record, a grid view and photo import.
 
 | | |
 |---|---|
@@ -208,18 +211,27 @@ around it.
 | film and paper profiles, print LUTs | CC BY-SA 4.0 |
 | metal-cpp | Apache-2.0 |
 
-All texts ship inside the app, under **SpektraLab → About SpektraLab**.
+All texts ship inside the app, under **Spektraplus → About Spektraplus**.
+Spektraplus's source is [Broksd/SpektraPLUS](https://github.com/Broksd/SpektraPLUS);
+every release is a tag in it.
 
 ## Trademark
 
-SpektraLab™ and the SpektraLab icon are managed by Guangzhou Songzi Intelligent
-Technology Services Co., Ltd.; trademark registration is in progress.
+SpektraLab's own trademark notice, kept as written:
 
-Forks are welcome. You can study, modify, port and redistribute the code under
-its licences, which cover the code and data but not the name or the icon. Keeping
-both in a personal fork is fine. If you publish a build for other people, even a
-free one, please give it its own name and icon. You are welcome to say it is
-based on SpektraLab, as long as it is clear that your project is unofficial.
+> SpektraLab™ and the SpektraLab icon are managed by Guangzhou Songzi Intelligent
+> Technology Services Co., Ltd.; trademark registration is in progress.
+>
+> Forks are welcome. You can study, modify, port and redistribute the code under
+> its licences, which cover the code and data but not the name or the icon. Keeping
+> both in a personal fork is fine. If you publish a build for other people, even a
+> free one, please give it its own name and icon. You are welcome to say it is
+> based on SpektraLab, as long as it is clear that your project is unofficial.
+>
+> We reserve the right to act against builds that pass themselves off as official
+> or imply our endorsement.
 
-We reserve the right to act against builds that pass themselves off as official
-or imply our endorsement.
+Accordingly, Spektraplus has its own name, icon and bundle id
+(`com.broksd.spektraplus`), and says in its About window and at the top of this
+README that it is an unofficial, modified SpektraLab. "spektrafilm" and Andrea
+Volpato's name are used only as factual credit, never as product branding.

@@ -228,7 +228,7 @@ final class LogFileSink: LogSink, @unchecked Sendable {
     /// Readable from anywhere; written only on the queue.
     let failure = Guarded<String?>(nil)
 
-    private let queue = DispatchQueue(label: "com.hanze.filmify.log", qos: .utility)
+    private let queue = DispatchQueue(label: "com.broksd.spektraplus.log", qos: .utility)
     private var handle: FileHandle?
     private var buffer: [String] = []
     private var timerScheduled = false

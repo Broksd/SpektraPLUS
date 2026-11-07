@@ -25,31 +25,31 @@ final class UpdateCheckTests: XCTestCase {
         }
     }
 
-    private func release(_ tag: String, url: String = "https://github.com/JamesQiu2005/SpektraLab/releases/tag/spektralab-v1.0.4") -> String {
+    private func release(_ tag: String, url: String = "https://github.com/Broksd/SpektraPLUS/releases/tag/spektraplus-v1.0.4") -> String {
         """
         {"tag_name":"\(tag)","html_url":"\(url)"}
         """
     }
 
-    func testTheCheckUsesTheSpektraLabReleaseEndpoint() {
+    func testTheCheckUsesTheSpektraplusReleaseEndpoint() {
         XCTAssertEqual(
             UpdateCheck.latestReleaseURL.absoluteString,
-            "https://api.github.com/repos/JamesQiu2005/SpektraLab/releases/latest")
+            "https://api.github.com/repos/Broksd/SpektraPLUS/releases/latest")
     }
 
     func testANewerPatchVersionIsComparedNumerically() async {
-        let stub = StubTransport(status: 200, body: release("spektralab-v1.0.10"))
+        let stub = StubTransport(status: 200, body: release("spektraplus-v1.0.10"))
         let status = await UpdateCheck.check(currentVersion: "1.0.9", transport: stub)
         guard case .updateAvailable(let version, let url) = status else {
             return XCTFail("expected an update, got \(status)")
         }
         XCTAssertEqual(version, "1.0.10")
         XCTAssertEqual(url.absoluteString,
-                       "https://github.com/JamesQiu2005/SpektraLab/releases/tag/spektralab-v1.0.4")
+                       "https://github.com/Broksd/SpektraPLUS/releases/tag/spektraplus-v1.0.4")
     }
 
     func testTheLatestReleaseIsReportedAsCurrent() async {
-        let stub = StubTransport(status: 200, body: release("spektralab-v1.0.3"))
+        let stub = StubTransport(status: 200, body: release("spektraplus-v1.0.3"))
         let status = await UpdateCheck.check(currentVersion: "1.0.3", transport: stub)
         XCTAssertEqual(status, .upToDate(version: "1.0.3"))
     }
@@ -65,12 +65,12 @@ final class UpdateCheckTests: XCTestCase {
     }
 
     func testAnUnparseableTagNeverLooksLikeUpToDate() async {
-        let stub = StubTransport(status: 200, body: release("spektralab-vnext"))
+        let stub = StubTransport(status: 200, body: release("spektraplus-vnext"))
         let status = await UpdateCheck.check(currentVersion: "1.0.3", transport: stub)
         guard case .failed(let reason) = status else {
             return XCTFail("an unparseable tag became \(status)")
         }
-        XCTAssertTrue(reason.contains("spektralab-vnext"), reason)
+        XCTAssertTrue(reason.contains("spektraplus-vnext"), reason)
     }
 
     func testNoReleaseNeverLooksLikeUpToDate() async {

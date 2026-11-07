@@ -476,7 +476,7 @@ struct SettingsWindow: View {
                     if case .failed(let reason) = updateStatus {
                         warning(L("Could not check: \(reason)", zh: "无法检查：\(reason)"))
                     }
-                    caption(L("One unauthenticated request to GitHub's public SpektraLab release API, only when you press this. It sends no identifier and no app version.", zh: "仅在你按下时，向 GitHub 公开的 Spektraplus 发布接口发送一次匿名请求。不发送任何标识符或应用版本。"))
+                    caption(L("One unauthenticated request to GitHub's public Spektraplus release API, only when you press this. It sends no identifier and no app version.", zh: "仅在你按下时，向 GitHub 公开的 Spektraplus 发布接口发送一次匿名请求。不发送任何标识符或应用版本。"))
                     if diagnostics.previousSessionChecked {
                         if let p = diagnostics.previousSession {
                             readout(L("Last session", zh: "上次会话"), p.endedCleanly

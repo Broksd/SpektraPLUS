@@ -35,7 +35,7 @@ mkdir -p "$out"
 # application and the licence file still pointing at the upstream project,
 # which is the source of the profiles and not of this app. If the repository is
 # renamed, change it in both places and re-run this script.
-source_url="https://github.com/Broksd/SpektraLab"
+source_url="https://github.com/Broksd/SpektraPLUS"
 # The application this one modifies (GPL-3.0 §5a: a modified work says so).
 based_on_url="https://github.com/JamesQiu2005/SpektraLab"
 # The upstream project, whose profiles and print model this application uses.
@@ -43,6 +43,8 @@ based_on_url="https://github.com/JamesQiu2005/SpektraLab"
 upstream_url="https://github.com/andreavolpato/spektrafilm"
 
 cp "$root/license/LICENSE" "$out/SpektraLab-GPL-3.0.txt"
+# GPL-3.0 §5(a): the modified work says what changed, and when.
+cp "$root/SPEKTRAPLUS-CHANGES.md" "$out/Spektraplus-CHANGES.txt"
 cp "$root/license/SPEKTRAFILM_LICENSE.txt" "$out/Profiles-and-LUTs-CC-BY-SA-4.0.txt"
 cp "$root/engine/third_party/metal-cpp/LICENSE.txt" "$out/metal-cpp-Apache-2.0.txt"
 
@@ -124,6 +126,9 @@ without them is not licensed to be shipped.
       The application and the C++ render engine, GPL-3.0-or-later. You have
       the right to the corresponding source code of this application:
       $source_url
+
+  Spektraplus-CHANGES.txt
+      What Spektraplus changed from SpektraLab, and when.
 
   Profiles-and-LUTs-CC-BY-SA-4.0.txt
       The 28 film and paper profiles, and the 8 baked print-preview LUTs

@@ -47,7 +47,7 @@ struct URLSessionUpdateTransport: UpdateTransport {
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
         // GitHub asks API clients to identify themselves. This is the product
         // name, not a machine identifier and not the app version.
-        request.setValue("SpektraLab", forHTTPHeaderField: "User-Agent")
+        request.setValue("Spektraplus", forHTTPHeaderField: "User-Agent")
 
         let (data, response) = try await Self.session.data(for: request)
         guard let http = response as? HTTPURLResponse else {
@@ -62,7 +62,7 @@ struct URLSessionUpdateTransport: UpdateTransport {
 
 enum UpdateCheck {
     static let latestReleaseURL = URL(
-        string: "https://api.github.com/repos/JamesQiu2005/SpektraLab/releases/latest")!
+        string: "https://api.github.com/repos/Broksd/SpektraPLUS/releases/latest")!
 
     enum Status: Equatable, Sendable {
         case idle
@@ -113,7 +113,7 @@ enum UpdateCheck {
                     return .failed(reason: "GitHub's unauthenticated rate limit was reached. Try again later.")
                 }
                 if response.status == 404 {
-                    return .failed(reason: "No published SpektraLab release was found.")
+                    return .failed(reason: "No published Spektraplus release was found.")
                 }
                 return .failed(reason: "GitHub returned HTTP \(response.status).")
             }
@@ -126,7 +126,7 @@ enum UpdateCheck {
             }
 
             guard let latest = version(fromTag: release.tagName) else {
-                return .failed(reason: "The latest release tag '\(release.tagName)' is not in the expected spektralab-vX.Y.Z form.")
+                return .failed(reason: "The latest release tag '\(release.tagName)' is not in the expected spektraplus-vX.Y.Z form.")
             }
             guard let installed = version(fromString: currentVersion) else {
                 return .failed(reason: "This build's version '\(currentVersion)' could not be read.")
@@ -143,7 +143,7 @@ enum UpdateCheck {
     }
 
     private static func version(fromTag tag: String) -> Version? {
-        let prefix = "spektralab-v"
+        let prefix = "spektraplus-v"
         guard tag.hasPrefix(prefix) else { return nil }
         return version(fromString: String(tag.dropFirst(prefix.count)))
     }

@@ -519,6 +519,7 @@
 		7A1377F4B609B3CE3513CAFD /* gen-catalog.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "gen-catalog.py"; sourceTree = "<group>"; };
 		D9DFA21EE15AC0B57DCC3ECE /* gen-project.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "gen-project.py"; sourceTree = "<group>"; };
 		2364A4BDECB2036E04A42FE8 /* live-window.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "live-window.swift"; sourceTree = "<group>"; };
+		3429C150CDB9373595103642 /* make-icon.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "make-icon.py"; sourceTree = "<group>"; };
 		C6454FA299ABB90F982C453B /* make-smoke.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = "make-smoke.py"; sourceTree = "<group>"; };
 		5FD5A6F01E9E37CE817FE7D2 /* measure-layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "measure-layout.swift"; sourceTree = "<group>"; };
 		CAC54B5D1A76CDDB8C5B1FC4 /* package.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "package.sh"; sourceTree = "<group>"; };
@@ -535,6 +536,7 @@
 				7A1377F4B609B3CE3513CAFD /* gen-catalog.py */,
 				D9DFA21EE15AC0B57DCC3ECE /* gen-project.py */,
 				2364A4BDECB2036E04A42FE8 /* live-window.swift */,
+				3429C150CDB9373595103642 /* make-icon.py */,
 				C6454FA299ABB90F982C453B /* make-smoke.py */,
 				5FD5A6F01E9E37CE817FE7D2 /* measure-layout.swift */,
 				CAC54B5D1A76CDDB8C5B1FC4 /* package.sh */,
@@ -1401,7 +1403,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -1419,12 +1421,12 @@
 				INFOPLIST_FILE = Spektrafilm/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.3.6;
+				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-framework Metal -framework QuartzCore -framework CoreText -framework CoreGraphics -framework Accelerate";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hanze.filmify;
+				PRODUCT_BUNDLE_IDENTIFIER = com.broksd.spektraplus;
 				PRODUCT_NAME = Spektraplus;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -1450,7 +1452,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -1466,12 +1468,12 @@
 				INFOPLIST_FILE = Spektrafilm/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.3.6;
+				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-framework Metal -framework QuartzCore -framework CoreText -framework CoreGraphics -framework Accelerate";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hanze.filmify;
+				PRODUCT_BUNDLE_IDENTIFIER = com.broksd.spektraplus;
 				PRODUCT_NAME = Spektraplus;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -1523,7 +1525,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -1539,12 +1541,12 @@
 				);
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.3.6;
+				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-framework Metal -framework QuartzCore -framework CoreText -framework CoreGraphics -framework Accelerate";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hanze.filmify.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.broksd.spektraplus.tests;
 				PRODUCT_NAME = SpektrafilmTests;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -1569,7 +1571,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -1583,12 +1585,12 @@
 				);
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.3.6;
+				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-framework Metal -framework QuartzCore -framework CoreText -framework CoreGraphics -framework Accelerate";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hanze.filmify.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.broksd.spektraplus.tests;
 				PRODUCT_NAME = SpektrafilmTests;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;

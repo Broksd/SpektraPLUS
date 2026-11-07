@@ -488,7 +488,7 @@ final class Log: @unchecked Sendable {
     /// the first record has landed.
     @discardableResult
     func startSession(destination: URL, retention: LogRetention, level: LogLevel,
-                      subsystem: String = "com.hanze.filmify",
+                      subsystem: String = "com.broksd.spektraplus",
                       previousSessionCheck: Bool = true,
                       onPreviousSession: (@Sendable (PreviousSessionReport?) -> Void)? = nil) -> URL {
         endSession()   // a second start in one process replaces the first

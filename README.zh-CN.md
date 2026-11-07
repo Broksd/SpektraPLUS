@@ -6,6 +6,8 @@
 >
 > **胶片模拟来自 Andrea Volpato 的 [spektrafilm](https://github.com/andreavolpato/spektrafilm)**：光谱引擎、实测的胶片与相纸配置文件以及印放模型都出自该项目（CC BY-SA 4.0）。Spektraplus 使用 spektrafilm 引擎，同样与该项目没有隶属关系。
 >
+> 修改了哪些内容、何时修改，见 [SPEKTRAPLUS-CHANGES.md](SPEKTRAPLUS-CHANGES.md)。
+>
 > 以下内容沿用 SpektraLab 的说明，文中的 SpektraLab 即 Spektraplus 继承的部分。
 
 macOS 上的胶片与放大相纸模拟器。打开一张 RAW，选好胶片和相纸，约一秒内得到一张按物理过程建模的照片——颗粒、光晕、成色剂耦合、放大机滤色，一样不少。
@@ -26,15 +28,18 @@ macOS 上的胶片与放大相纸模拟器。打开一张 RAW，选好胶片和�
 
 ## 安装
 
-从 [spektralab.app](https://spektralab.app) 或 [Releases](https://github.com/JamesQiu2005/SpektraLab/releases) 下载 DMG，打开后把 SpektraLab 拖进“应用程序”文件夹。应用已用 Developer ID 签名，并通过 Apple 公证，可以像其他应用一样直接打开。
+从 [Releases](https://github.com/Broksd/SpektraPLUS/releases) 下载 DMG，打开后把 Spektraplus 拖进“应用程序”文件夹。需要 Apple 芯片、macOS 15 或更高版本。
 
-需要 Apple 芯片、macOS 15 或更高版本。
+**Alpha 版没有 Apple Developer ID 签名和公证**，第一次打开时 macOS 会拦下。任选一种方法放行（只需一次）：
 
-1.3.3 之前的版本为 ad-hoc 签名。使用这些版本时，首次运行前需解除隔离：
+- 在“应用程序”里右键 Spektraplus → 打开 → 再点“打开”；或
+- 在终端运行：
 
 ```bash
-xattr -d -r com.apple.quarantine /Applications/SpektraLab.app
+xattr -d -r com.apple.quarantine /Applications/Spektraplus.app
 ```
+
+Spektraplus 与官方 SpektraLab 是两个独立的应用，可以同时安装。两者共用同一个编辑参数文件夹（`~/Library/Application Support/SpektraLab`），所以在其中一个里做的编辑，另一个也能读到。
 
 ## 文件夹与旗标
 
@@ -110,17 +115,13 @@ xcodebuild -project Spektrafilm.xcodeproj -scheme SpektrafilmTests \
 
 ## 参与贡献
 
-欢迎提交 Pull Request，请遵守以下三条规则：
+Spektraplus 的问题和建议请提交到 [Broksd/SpektraPLUS](https://github.com/Broksd/SpektraPLUS/issues)，**不要提交到官方 SpektraLab**，那边的开发者不负责这个修改版。
 
-- **Windows 与 Linux 相关的工作只提交到 `Windows_Linux` 分支，不要提交到 `main`。**
-  `main` 是 macOS 产品；针对它的 Windows 或 Linux 相关 PR 会被关闭，并请你改投目标分支。
-- **把工作拆成可审阅的多个提交。** 每个提交只做一件事，提交信息写清做了什么、为什么。
-  把整个功能、重命名和格式调整塞进一个大提交的 PR 无法审阅，不会被合并。
-- **尊重开源社区。** 保留许可与致谢（见下文），注明你所依赖的他人工作，在 issue 与评审中保持礼貌。
+如果某项改进也适合官方 SpektraLab，可以按其规则单独整理后提交到 [JamesQiu2005/SpektraLab](https://github.com/JamesQiu2005/SpektraLab)：每个提交只做一件事，不带 Spektraplus 的改名和图标。
 
 ## 致谢与许可
 
-胶片过程模型、28 款实测配置与放大 LUT 来自 Andrea Volpato 的 [spektrafilm](https://github.com/andreavolpato/spektrafilm)；4 款黑白胶片配置来自开发者本人 Hanze Qiu; SpektraLab 是该引擎的原生 C++/Metal 移植，以及围绕它构建的应用。
+胶片过程模型、28 款实测配置与放大 LUT 来自 Andrea Volpato 的 [spektrafilm](https://github.com/andreavolpato/spektrafilm)；4 款黑白胶片配置来自 SpektraLab 开发者 Hanze Qiu；SpektraLab 是该引擎的原生 C++/Metal 移植，以及围绕它构建的应用；Spektraplus 是 SpektraLab 的非官方修改版，增加了文件夹浏览、收藏、旗标、文件夹记录、网格视图和照片导入。
 
 | | |
 |---|---|
@@ -128,12 +129,16 @@ xcodebuild -project Spektrafilm.xcodeproj -scheme SpektrafilmTests \
 | 胶片与相纸配置、放大 LUT | CC BY-SA 4.0 |
 | metal-cpp | Apache-2.0 |
 
-全部许可文本随应用附带，见 **SpektraLab → 关于 SpektraLab**。
+全部许可文本随应用附带，见 **Spektraplus → 关于 Spektraplus**。Spektraplus 的源码在 [Broksd/SpektraPLUS](https://github.com/Broksd/SpektraPLUS)，每个发布版本都对应仓库里的一个标签。
 
 ## 商标
 
-SpektraLab™ 名称及其图标由广州松子智能科技服务有限公司管理，相关商标注册申请正在办理中。
+以下是 SpektraLab 官方的商标声明，原文保留：
 
-欢迎 Fork。你可以依照开源许可研究、修改、移植和再分发代码；这些许可涵盖代码与数据，但不包括名称与图标。在个人 fork 中保留它们没有问题。如果要向他人发布构建版本，即使是免费的，也请换用自己的名称和图标。欢迎说明项目基于 SpektraLab，但请清楚标明它并非官方版本。
+> SpektraLab™ 名称及其图标由广州松子智能科技服务有限公司管理，相关商标注册申请正在办理中。
+>
+> 欢迎 Fork。你可以依照开源许可研究、修改、移植和再分发代码；这些许可涵盖代码与数据，但不包括名称与图标。在个人 fork 中保留它们没有问题。如果要向他人发布构建版本，即使是免费的，也请换用自己的名称和图标。欢迎说明项目基于 SpektraLab，但请清楚标明它并非官方版本。
+>
+> 对于冒充官方版本或暗示获得我们认可的行为，我们保留依法采取措施的权利。
 
-对于冒充官方版本或暗示获得我们认可的行为，我们保留依法采取措施的权利。
+据此，Spektraplus 使用自己的名称、图标和 Bundle ID（`com.broksd.spektraplus`），并在应用内“关于”窗口和本文开头注明它是 SpektraLab 的非官方修改版。“spektrafilm”及 Andrea Volpato 的名字只用于事实性的致谢，不用于产品品牌。
