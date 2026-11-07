@@ -87,4 +87,24 @@ final class PhotoImporterTests: XCTestCase {
         s.viewMode = .single
         XCTAssertFalse(s.showsGrid)
     }
+
+    @MainActor
+    func testTheLastSourceComesBackWhenItIsThere() throws {
+        let suite = "spk-sources-\(UUID().uuidString)"
+        let d = try XCTUnwrap(UserDefaults(suiteName: suite))
+        addTeardownBlock { d.removePersistentDomain(forName: suite) }
+        let card = try folder(["DCIM/100MSDCF/a.ARW": "1"]).standardizedFileURL
+        let other = try folder().standardizedFileURL
+        ImportSources.remember(card, in: d)
+        ImportSources.remember(other, in: d)
+        ImportSources.remember(card, in: d)
+        XCTAssertEqual(ImportSources.last(in: d), card)
+        XCTAssertEqual(ImportSources.recents(in: d).map(\.path), [card.path, other.path], "most recent first, once each")
+        // The card taken out: not offered, still listed.
+        try FileManager.default.removeItem(at: card)
+        XCTAssertNil(ImportSources.last(in: d))
+        XCTAssertEqual(ImportSources.recents(in: d).count, 2)
+        XCTAssertEqual(ImportSources.title(URL(fileURLWithPath: "/Volumes/Untitled/DCIM")), "Untitled › DCIM")
+        XCTAssertEqual(ImportSources.title(URL(fileURLWithPath: "/Volumes/Untitled")), "Untitled")
+    }
 }

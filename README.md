@@ -60,7 +60,9 @@ selected ones — or another folder or card, into a destination, filed by
 capture date (`2026/2026-11-07`, as Lightroom Classic files them, and other
 layouts). Pick the destination from Favorites — a NAS `lightroom` folder, say
 — and every import lands in its year and day folders; the destination is
-added to Favorites. It only copies: the
+added to Favorites. The last source — a card mounts at the same path each
+time — is offered again when it is connected, and the recent ones are in the
+source's menu. It only copies: the
 originals are never moved or deleted, and a file already at the destination
 is skipped.
 

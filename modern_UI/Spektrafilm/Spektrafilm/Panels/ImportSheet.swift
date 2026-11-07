@@ -51,6 +51,12 @@ struct ImportSheet: View {
         }
         .padding(20)
         .frame(width: 480)
+        // Last time's card or folder, when it is there again.
+        .onAppear {
+            if let last = ImportSources.last(), last.standardizedFileURL != session.libraryFolder?.standardizedFileURL {
+                useSource(last)
+            }
+        }
         .background(Theme.card)
         .preferredColorScheme(.dark)
     }
@@ -61,10 +67,33 @@ struct ImportSheet: View {
         VStack(alignment: .leading, spacing: 14) {
             row(L("From", zh: "来源")) {
                 pathLine(source, empty: L("No folder", zh: "未选择文件夹"))
-                Button(L("Choose…", zh: "选择…")) { chooseSource() }.disabled(running)
-                if otherSource != nil, session.libraryFolder != nil {
-                    Button(L("Open Folder", zh: "当前文件夹")) { otherSource = nil }.disabled(running)
+                // The open folder, then the recent sources — a card that is
+                // not in the reader is listed, greyed, so it is recognisable.
+                Menu(L("Choose…", zh: "选择…")) {
+                    if let open = session.libraryFolder {
+                        Button(L("Open Folder: \(open.lastPathComponent)", zh: "当前文件夹：\(open.lastPathComponent)")) {
+                            otherSource = nil
+                        }
+                    }
+                    let recents = ImportSources.recents()
+                    if !recents.isEmpty {
+                        Divider()
+                        Section(L("Recent", zh: "最近的来源")) {
+                            ForEach(recents, id: \.path) { r in
+                                let here = ImportSources.isAvailable(r)
+                                Button(here ? ImportSources.title(r)
+                                            : L("\(ImportSources.title(r)) (not connected)", zh: "\(ImportSources.title(r))（未连接）")) {
+                                    useSource(r)
+                                }
+                                .disabled(!here)
+                            }
+                        }
+                    }
+                    Divider()
+                    Button(L("Other Folder…", zh: "其他文件夹…")) { chooseSource() }
                 }
+                .fixedSize()
+                .disabled(running)
             }
             if fromOpenFolder {
                 Picker("", selection: $scope) {
@@ -212,7 +241,12 @@ struct ImportSheet: View {
     private func chooseSource() {
         guard let url = pickFolder(L("Choose the folder or card to import from.", zh: "选择要导入的文件夹或存储卡。"))
         else { return }
+        useSource(url)
+    }
+
+    private func useSource(_ url: URL) {
         otherSource = url
+        ImportSources.remember(url)
         listOther()
     }
 
@@ -266,4 +300,47 @@ struct ImportSheet: View {
 @Observable
 final class ImportProgress {
     var done = 0
+}
+
+/// The import's sources: the last one is offered again when it is there (a
+/// card mounts at the same `/Volumes/…` path each time), and the last few are
+/// a menu.
+enum ImportSources {
+    nonisolated static let lastKey = "library.importSource"
+    nonisolated static let recentKey = "library.importRecentSources"
+    nonisolated static let keep = 6
+
+    static func remember(_ url: URL, in defaults: UserDefaults = .standard) {
+        let path = url.standardizedFileURL.path
+        var recent = (defaults.stringArray(forKey: recentKey) ?? []).filter { $0 != path }
+        recent.insert(path, at: 0)
+        defaults.set(Array(recent.prefix(keep)), forKey: recentKey)
+        defaults.set(path, forKey: lastKey)
+    }
+
+    static func recents(in defaults: UserDefaults = .standard) -> [URL] {
+        (defaults.stringArray(forKey: recentKey) ?? []).map { URL(fileURLWithPath: $0, isDirectory: true) }
+    }
+
+    /// The last source, if it can be read now.
+    static func last(in defaults: UserDefaults = .standard) -> URL? {
+        guard let path = defaults.string(forKey: lastKey) else { return nil }
+        let url = URL(fileURLWithPath: path, isDirectory: true)
+        return isAvailable(url) ? url : nil
+    }
+
+    static func isAvailable(_ url: URL) -> Bool {
+        var dir: ObjCBool = false
+        return FileManager.default.fileExists(atPath: url.path, isDirectory: &dir) && dir.boolValue
+    }
+
+    /// A card's name rather than `DCIM`: the folder, and its disk when it is
+    /// on one.
+    static func title(_ url: URL) -> String {
+        let parts = url.standardizedFileURL.pathComponents
+        if parts.count > 2, parts[1] == "Volumes" {
+            return parts.count == 3 ? parts[2] : "\(parts[2]) › \(url.lastPathComponent)"
+        }
+        return url.lastPathComponent
+    }
 }
