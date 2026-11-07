@@ -12,7 +12,7 @@ this twice produces a byte-identical file. Every Swift/Metal file under
 the unit-test target. `Resources/` is added as a folder reference so anything
 dropped in it ships in the bundle without touching this script.
 
-`Spektrafilm/SpektraLab.icon` is the Icon Composer document and is treated as
+`Spektrafilm/Spektraplus.icon` is the Icon Composer document and is treated as
 one opaque file, not as the directory of SVG layers it really is: it goes
 through `actool` like an asset catalogue (`folder.iconcomposer.icon` is
 `BasedOn = folder.abstractassetcatalog`), and `ASSETCATALOG_COMPILER_APPICON_NAME`
@@ -62,6 +62,9 @@ ENGINE = ROOT.parents[1] / "engine"
 # licence explicitly welcomes as a factual reference ("this app uses
 # spektrafilm LUTs"). So: product renamed, engine and profiles keep their
 # name, and the About panel carries the credit (HANDOFF-DISTRIBUTION §2.3).
+# This fork is Spektraplus (2026-11-07): a modified SpektraLab, which the About
+# panel and the licence README say. The data folders, `SpektraLab.folder.json`
+# and the agent id keep the old name so nothing already saved goes missing.
 #
 # `BUNDLE_ID` deliberately still reads "filmify": it is the identity macOS
 # Gatekeeper/notarisation already has on record for this app, and changing it
@@ -69,7 +72,7 @@ ENGINE = ROOT.parents[1] / "engine"
 # reverse-DNS id is a separate, larger decision than renaming what the user
 # sees.
 APP = "Spektrafilm"
-PRODUCT_NAME = "SpektraLab"
+PRODUCT_NAME = "Spektraplus"
 TESTS = "SpektrafilmTests"
 BUNDLE_ID = "com.hanze.filmify"
 MACOS = "15.0"
@@ -286,7 +289,7 @@ def build() -> str:
         "MTL_ENABLE_DEBUG_INFO": "INCLUDE_SOURCE",
         "MTL_FAST_MATH": "YES",
         "COMBINE_HIDPI_IMAGES": "YES",
-        # The Icon Composer document, `Spektrafilm/SpektraLab.icon`, whose base
+        # The Icon Composer document, `Spektrafilm/Spektraplus.icon`, whose base
         # name this must match -- `actool` selects the app icon by name, and a
         # name with no document behind it compiles to a bundle with no icon
         # rather than to an error. It reads PRODUCT_NAME because the icon is

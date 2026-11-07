@@ -76,8 +76,10 @@ final class LicensingTests: XCTestCase {
         // The product is named as itself, not as the project it builds on —
         // which is what SPEKTRAFILM_LICENSE.txt asks for and the reason the
         // app was renamed in the first place.
-        XCTAssertTrue(readme.contains("SpektraLab is free software"),
+        XCTAssertTrue(readme.contains("Spektraplus is free software"),
                       "the shipped licence file does not call the product by its name")
+        XCTAssertTrue(readme.contains(AboutWindow.basedOnURL),
+                      "a modified work names what it modifies (GPL-3.0 §5a)")
         // And the upstream credit is still there: this is a two-link file and
         // fixing one must not delete the other.
         XCTAssertTrue(readme.contains(AboutWindow.upstreamURL),

@@ -1,6 +1,19 @@
-# SpektraLab™
+# Spektraplus
 
-**English** · [简体中文](README.zh-CN.md) · [spektralab.app](https://spektralab.app)
+**English** · [简体中文](README.zh-CN.md)
+
+> **Spektraplus is an unofficial, modified version of
+> [SpektraLab](https://github.com/JamesQiu2005/SpektraLab)**, adding a folder
+> browser with favorites, flags, a per-folder record, a grid view and photo
+> import filed by capture date. It is not endorsed by the SpektraLab project.
+>
+> **The film simulation is [spektrafilm](https://github.com/andreavolpato/spektrafilm)
+> by Andrea Volpato** — the spectral engine, the measured film and paper
+> profiles and the print model all come from it (CC BY-SA 4.0). Spektraplus
+> uses the spektrafilm engine; it is not affiliated with that project either.
+>
+> The rest of this README is SpektraLab's, and where it says SpektraLab it
+> describes what Spektraplus inherits.
 
 A film and print simulator for macOS. Open a RAW, pick a film and a paper,
 and get a physically modelled print — grain, halation, couplers, the enlarger's

@@ -17,7 +17,7 @@ set -e
 cd "$(dirname "$0")/.."
 OUT="$(cd .. && pwd)/design/snapshots"
 mkdir -p "$OUT"
-APP="build/DerivedData/Build/Products/Debug/SpektraLab.app/Contents/MacOS/SpektraLab"
+APP="build/DerivedData/Build/Products/Debug/Spektraplus.app/Contents/MacOS/Spektraplus"
 if [ ! -x "$APP" ]; then
   xcodebuild -project Spektrafilm.xcodeproj -scheme Spektrafilm -configuration Debug \
     -derivedDataPath build/DerivedData build 2>&1 | grep -E "error:|BUILD"

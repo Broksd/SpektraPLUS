@@ -46,7 +46,10 @@ struct AboutWindow: View {
     /// `bundle-licenses.sh`, then re-run that script.** GitHub redirects a
     /// renamed repository, so the old link keeps resolving and nothing breaks
     /// loudly — which is exactly why it needs saying.
-    static let sourceURL = "https://github.com/JamesQiu2005/SpektraLab"
+    static let sourceURL = "https://github.com/Broksd/SpektraLab"
+    /// SpektraLab, which this application modifies. GPL-3.0 §5a: a modified
+    /// work carries a notice that it is one.
+    static let basedOnURL = "https://github.com/JamesQiu2005/SpektraLab"
     /// The same URL as the panel shows it, without the scheme.
     static var sourceLabel: String {
         sourceURL.replacingOccurrences(of: "https://", with: "")
@@ -100,9 +103,13 @@ struct AboutWindow: View {
             Image(nsImage: NSApp.applicationIconImage)
                 .resizable().frame(width: 64, height: 64)
             VStack(alignment: .leading, spacing: 3) {
-                Text("SpektraLab").font(.system(size: 20, weight: .semibold))
+                Text("Spektraplus").font(.system(size: 20, weight: .semibold))
                 Text(AboutWindow.version).font(Theme.Font.sublabel).foregroundStyle(.secondary)
                 Text("A spectral film and print simulation for macOS.")
+                    .font(Theme.Font.sublabel).foregroundStyle(.secondary)
+                // Factual, as SPEKTRAFILM_LICENSE.txt asks: the engine is
+                // credited here, not in the product's name.
+                Text("Film simulation by the spektrafilm engine — Andrea Volpato.")
                     .font(Theme.Font.sublabel).foregroundStyle(.secondary)
             }
             Spacer(minLength: 0)
@@ -118,7 +125,7 @@ struct AboutWindow: View {
             // product branding be kept apart from the factual reference —
             // which it welcomes. Saying so on the About panel is where that
             // distinction is legible.
-            Text("SpektraLab uses the spektrafilm engine, film and paper profiles, and the print-preview LUTs baked from them.")
+            Text("Spektraplus uses the spektrafilm engine, film and paper profiles, and the print-preview LUTs baked from them.")
                 .font(Theme.Font.sublabel).foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             // The attribution the CC BY-SA licence requires, in the form it
@@ -132,8 +139,12 @@ struct AboutWindow: View {
                      AboutWindow.upstreamURL)
             }
             VStack(alignment: .leading, spacing: 2) {
-                Text("SpektraLab and its render engine")
+                Text("Spektraplus and its render engine")
                     .font(Theme.Font.groupHeader).foregroundStyle(Theme.text)
+                Text("An unofficial, modified version of SpektraLab, with a folder browser, flags, a grid view and photo import. Not endorsed by the SpektraLab project.")
+                    .font(Theme.Font.sublabel).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                link(AboutWindow.basedOnURL.replacingOccurrences(of: "https://", with: ""), AboutWindow.basedOnURL)
                 // The GPL's written offer, and the only form of it that is
                 // any use: a place to get the code. It points at this
                 // application's own repository, which is the work the GPL

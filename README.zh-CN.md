@@ -1,6 +1,12 @@
-# SpektraLab™
+# Spektraplus
 
-[English](README.md) · **简体中文** · [spektralab.app](https://spektralab.app)
+[English](README.md) · **简体中文**
+
+> **Spektraplus 是 [SpektraLab](https://github.com/JamesQiu2005/SpektraLab) 的非官方修改版**，新增了带收藏的文件夹浏览器、旗标、每个文件夹的记录、网格视图，以及按拍摄日期归档的照片导入。本项目与 SpektraLab 官方无关，也未获其认可。
+>
+> **胶片模拟来自 Andrea Volpato 的 [spektrafilm](https://github.com/andreavolpato/spektrafilm)**：光谱引擎、实测的胶片与相纸配置文件以及印放模型都出自该项目（CC BY-SA 4.0）。Spektraplus 使用 spektrafilm 引擎，同样与该项目没有隶属关系。
+>
+> 以下内容沿用 SpektraLab 的说明，文中的 SpektraLab 即 Spektraplus 继承的部分。
 
 macOS 上的胶片与放大相纸模拟器。打开一张 RAW，选好胶片和相纸，约一秒内得到一张按物理过程建模的照片——颗粒、光晕、成色剂耦合、放大机滤色，一样不少。
 

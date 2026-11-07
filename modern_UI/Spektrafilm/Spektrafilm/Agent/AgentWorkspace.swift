@@ -56,7 +56,7 @@ final class AgentWorkspace {
         }
         if url == target, session.selection == target { return }
         guard !Library.frames(from: [target]).isEmpty else {
-            throw AgentError.refused("\(target.lastPathComponent) is not an image SpektraLab opens.")
+            throw AgentError.refused("\(target.lastPathComponent) is not an image Spektraplus opens.")
         }
         if url != nil { session.flushSave() }
         session.lastError = nil

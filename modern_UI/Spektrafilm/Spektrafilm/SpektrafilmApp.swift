@@ -42,7 +42,7 @@ struct SpektrafilmApp: App {
     private let snapshot = SnapshotRequest.parse(CommandLine.arguments)
 
     var body: some Scene {
-        Window("SpektraLab", id: "editor") {
+        Window("Spektraplus", id: "editor") {
             EditorWindow(session: session)
                 .id(InterfaceScaleStore.shared.scale)
                 .environment(\.snapshotMode, snapshot != nil)
@@ -62,7 +62,7 @@ struct SpektrafilmApp: App {
         // require something visible, and CC BY-SA 4.0 names an About screen
         // by example as a place the attribution has to survive. See
         // `AboutWindow`.
-        Window("About SpektraLab", id: "about") {
+        Window("About Spektraplus", id: "about") {
             AboutWindow()
         }
         .windowResizability(.contentSize)
@@ -163,7 +163,7 @@ struct EditorCommands: Commands {
 
     var body: some Commands {
         CommandGroup(replacing: .appInfo) {
-            Button("About SpektraLab") { openAbout() }
+            Button("About Spektraplus") { openAbout() }
         }
         // Hand-declared because the page is a `Window` and not a `Settings`
         // scene — see the comment on that scene. Same slot, same shortcut.

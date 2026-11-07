@@ -155,7 +155,7 @@ final class Diagnostics {
 
     /// The caption under the control, in the same idiom as the other two.
     nonisolated static let memoryReserveNote =
-        "Memory SpektraLab leaves free for everything else. A frame whose forecast peak does not fit "
+        "Memory Spektraplus leaves free for everything else. A frame whose forecast peak does not fit "
         + "under it gets a warning you can dismiss — never a refusal. The override below suppresses "
         + "the warning, not eviction."
 
@@ -204,9 +204,9 @@ final class Diagnostics {
     /// holdings the number actually governs; the rest separates the two
     /// independent budgets so the reserve cannot be read as a cap.
     nonisolated static let memoryCapNote =
-        "How much SpektraLab may hold in caches and scratch buffers. The frame you are looking at is "
+        "How much Spektraplus may hold in caches and scratch buffers. The frame you are looking at is "
         + "never evicted, whatever this says. Free memory is set by the other applications on the "
-        + "machine; this is the part SpektraLab decides."
+        + "machine; this is the part Spektraplus decides."
 
     /// How much disk the shared decode/print cache may hold (`DiskCacheStore`).
     ///
@@ -258,7 +258,7 @@ final class Diagnostics {
     /// it costs, because "clear the cache" is only a safe-sounding button if
     /// the page says what it throws away.
     nonisolated static let diskCacheCapNote =
-        "Disk SpektraLab may use for decoded frames and finished prints, so reopening a photo does not "
+        "Disk Spektraplus may use for decoded frames and finished prints, so reopening a photo does not "
         + "decode it again. Nothing here is your work — every entry can be remade from the original "
         + "file, so the only cost of emptying it is the wait the next time you open those frames. "
         + "Least-valuable entries are evicted first, by how often each is used against what it cost "

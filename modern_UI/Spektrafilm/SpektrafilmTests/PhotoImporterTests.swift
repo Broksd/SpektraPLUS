@@ -1,5 +1,4 @@
 import XCTest
-@testable import SpektraLab
 
 /// `PhotoImporter`: where each photograph goes, what is skipped, and that the
 /// copy leaves the source alone.

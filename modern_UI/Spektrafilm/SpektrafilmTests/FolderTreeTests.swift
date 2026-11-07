@@ -1,5 +1,4 @@
 import XCTest
-@testable import SpektraLab
 
 /// The folder browser's Places and Favorites.
 @MainActor

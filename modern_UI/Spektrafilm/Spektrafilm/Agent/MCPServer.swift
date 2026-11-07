@@ -60,7 +60,7 @@ final class MCPServer {
             return result(id, [
                 "protocolVersion": .string(asked ?? Self.protocolVersion),
                 "capabilities": ["tools": [:], "prompts": [:]],
-                "serverInfo": ["name": "spektralab", "title": "SpektraLab", "version": .string(AgentCLI.appVersion)],
+                "serverInfo": ["name": "spektralab", "title": "Spektraplus", "version": .string(AgentCLI.appVersion)],
                 "instructions": .string(Self.instructions),
             ])
         case "ping":
@@ -128,7 +128,7 @@ final class MCPServer {
     static let editPrompt: JSONValue = [
         "name": "edit_photo",
         "title": "Edit a photo from one sentence",
-        "description": "Edit a photograph in SpektraLab to match a description, the way a printer would.",
+        "description": "Edit a photograph in Spektraplus to match a description, the way a printer would.",
         "arguments": [
             ["name": "path", "description": "The image file.", "required": true],
             ["name": "instruction", "description": "What the print should look like.", "required": true],

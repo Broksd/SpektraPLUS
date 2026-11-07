@@ -357,7 +357,7 @@ private struct FolderRow: View {
             Spacer(minLength: 4)
             if tree.hasRecord(row.url) {
                 Circle().fill(Theme.accent.opacity(0.8)).frame(width: 5, height: 5)
-                    .help(L("This folder has a SpektraLab record", zh: "此文件夹有 SpektraLab 记录"))
+                    .help(L("This folder has a Spektraplus record", zh: "此文件夹有 Spektraplus 记录"))
             }
         }
         .padding(.leading, 6 + CGFloat(row.depth) * 12)

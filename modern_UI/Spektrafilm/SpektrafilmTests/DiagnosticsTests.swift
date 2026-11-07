@@ -897,7 +897,7 @@ final class DiagnosticsTests: XCTestCase {
         XCTAssertEqual(session.refusal?.kind, .size)
         XCTAssertEqual(session.canvasBadges.filter { $0.hasPrefix("refused") }.count, 1,
                        "no badge for a refused frame: \(session.canvasBadges)")
-        XCTAssertTrue(session.status.contains("larger than SpektraLab"))
+        XCTAssertTrue(session.status.contains("larger than Spektraplus"))
         XCTAssertEqual(session.lastError, session.status)
 
         let error = try XCTUnwrap(log.records().first { $0.category == .error })

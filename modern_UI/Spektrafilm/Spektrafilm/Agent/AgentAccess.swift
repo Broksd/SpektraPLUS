@@ -20,7 +20,7 @@ enum AgentAccess {
         set { UserDefaults.standard.set(newValue, forKey: key) }
     }
 
-    static let refusal = "Command line and agent access is off. Turn it on in SpektraLab ▸ Settings ▸ Agents."
+    static let refusal = "Command line and agent access is off. Turn it on in Spektraplus ▸ Settings ▸ Agents."
 
     /// The app's own executable: what the MCP configuration names, and what
     /// the installed command runs.
@@ -61,7 +61,7 @@ enum AgentAccess {
         let fm = FileManager.default
         if let text = try? String(contentsOf: installURL, encoding: .utf8),
            !text.contains("Installed by Settings ▸ Agents") {
-            throw AgentError.refused("\(installURL.path) exists and is not SpektraLab's; it was left alone.")
+            throw AgentError.refused("\(installURL.path) exists and is not Spektraplus's; it was left alone.")
         }
         try fm.createDirectory(at: installURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         try script.write(to: installURL, atomically: true, encoding: .utf8)
@@ -72,7 +72,7 @@ enum AgentAccess {
         guard installState != .absent else { return }
         guard let text = try? String(contentsOf: installURL, encoding: .utf8),
               text.contains("Installed by Settings ▸ Agents") else {
-            throw AgentError.refused("\(installURL.path) is not SpektraLab's; it was left alone.")
+            throw AgentError.refused("\(installURL.path) is not Spektraplus's; it was left alone.")
         }
         try FileManager.default.removeItem(at: installURL)
     }

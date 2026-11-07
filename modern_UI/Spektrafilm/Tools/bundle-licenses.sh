@@ -35,7 +35,9 @@ mkdir -p "$out"
 # application and the licence file still pointing at the upstream project,
 # which is the source of the profiles and not of this app. If the repository is
 # renamed, change it in both places and re-run this script.
-source_url="https://github.com/JamesQiu2005/SpektraLab"
+source_url="https://github.com/Broksd/SpektraLab"
+# The application this one modifies (GPL-3.0 §5a: a modified work says so).
+based_on_url="https://github.com/JamesQiu2005/SpektraLab"
 # The upstream project, whose profiles and print model this application uses.
 # A different work under a different licence; not a substitute for the above.
 upstream_url="https://github.com/andreavolpato/spektrafilm"
@@ -112,7 +114,9 @@ cat > "$out/README.txt" <<README
 Licences and credits
 ====================
 
-SpektraLab is free software. This directory carries the full text of every
+Spektraplus is free software. It is an unofficial, modified version of SpektraLab
+($based_on_url), changed from 2026-11 on: a folder browser,
+flags, a folder record, a grid view and a photo import. This directory carries the full text of every
 licence the application is distributed under, because a binary that ships
 without them is not licensed to be shipped.
 
@@ -137,11 +141,11 @@ without them is not licensed to be shipped.
       metal-cpp, Apple's C++ bindings for Metal, Apache-2.0, compiled into
       the binary.
 
-Two projects, two links, and they are not interchangeable. SpektraLab is a
+Two projects, two links, and they are not interchangeable. Spektraplus is a
 native macOS application and a C++ render engine, and the first link above is
-where its source is. The film simulation, the measured profiles and the
+where its source is (SpektraLab's own is the link at the top). The film simulation, the measured profiles and the
 print+scan model are Andrea Volpato's spektrafilm, and the second link is
-where that lives. SpektraLab is not affiliated with or endorsed by it.
+where that lives. Spektraplus is not affiliated with or endorsed by it.
 README
 
 printf 'licences   -> %s\n' "$out"

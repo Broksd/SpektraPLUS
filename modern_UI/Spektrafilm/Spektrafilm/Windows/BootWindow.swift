@@ -25,13 +25,20 @@ struct BootWindow: View {
     var body: some View {
         VStack(spacing: 0) {
             Spacer(minLength: 0)
-            Text("SpektraLab")
+            Text("Spektraplus")
                 .font(.system(size: 26, weight: .semibold))
                 .foregroundStyle(Theme.text)
             Text("film simulation")
                 .font(Theme.Font.caption)
                 .foregroundStyle(Theme.dim)
                 .padding(.top, 2)
+            // A factual reference, which SPEKTRAFILM_LICENSE.txt welcomes;
+            // not part of the product's name or icon, which it asks to keep
+            // apart.
+            Text(L("Uses the spektrafilm engine by Andrea Volpato", zh: "使用 Andrea Volpato 的 spektrafilm 引擎"))
+                .font(Theme.Font.caption)
+                .foregroundStyle(Theme.dim)
+                .padding(.top, 6)
             Spacer(minLength: 0)
 
             // The progress line. `.failed` is deliberately not a dead end —
