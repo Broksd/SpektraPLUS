@@ -1,7 +1,7 @@
 //  LeftPanel.swift — the material rail (v4, 2026-09-26): **Film and Print**.
 //
 //  v4 made this rail the choices of *material* and nothing else: the
-//  navigator at the top, then the film, the paper, the crop and the enlarger.
+//  film, the paper, the crop and the enlarger.
 //  Everything that is a *parameter* of those choices — Camera, Film Format,
 //  Scene Placement, the Tone Mask — moved to the Parameters rail.
 //
@@ -38,10 +38,12 @@ struct LeftPanel: View {
     /// checker has no long expression to solve.
     private var sections: [(String, AnyView)] {
         var s: [(String, AnyView)] = []
-        // A pair's own tool sits under the Navigator, and it has no crop
-        // section: each picture is cropped under its own hole.
+        // A pair's own tool heads the rail, and it has no crop section: each
+        // picture is cropped under its own hole. The Navigator is not listed
+        // (2026-11-07): the canvas pans with Space-drag and H, and the rail's
+        // height is worth more to the film and the paper. `NavigatorSection`
+        // stays for its drawing, which the thumbnails use.
         let isPair = session.pair != nil
-        s.append(("navigator", AnyView(NavigatorSection(session: session))))
         if isPair { s.append((PairSection.key, AnyView(PairSection(session: session)))) }
         s.append(("clipboard", AnyView(ClipboardSection(session: session))))
         s.append(("film", AnyView(FilmSection(session: session))))
@@ -68,8 +70,7 @@ struct LeftPanel: View {
         .railCard()
     }
 
-    /// Film and Print: the navigator, the film, the paper, the crop and the
-    /// enlarger.
+    /// Film and Print: the film, the paper, the crop and the enlarger.
     private var materialPage: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 0) {
