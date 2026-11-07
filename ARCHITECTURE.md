@@ -520,11 +520,14 @@ inside a field. `TypingKeyGuard` is a local key monitor that sends typing keys
 - **Select all and Sync** (⌘A, Settings Clipboard ▸ Sync to N) write the ticked
   groups from the current frame to the picked set through the clipboard's own
   rules; there is no batch undo.
-- **The folder browser** (`Panels/FolderBrowser.swift`, ⇧⌘L) is a column left
-  of the left rail: home, Pictures, mounted volumes and added folders, listed
-  lazily. A click is `Session.open(urls: [folder])`; `Session.libraryFolder`
-  is the folder on screen. While it is open its header holds the window
-  buttons' clearance instead of the left rail's.
+- **The folder browser** (`Panels/FolderBrowser.swift`, ⇧⌘L) is the left
+  rail's Folders page; tabs in the rail's header switch between it and Film
+  and Print (`Session.leftRailPage`). It is a page and not a column because
+  the top bar alone needs ≈ 821 pt: a fourth column made the window wider
+  than a 1470 pt screen and the HStack overflowed both edges. It lists home,
+  Pictures, mounted volumes and added folders, lazily. A click is
+  `Session.open(urls: [folder])`; `Session.libraryFolder` is the folder on
+  screen. Snapshot captures show Film and Print only.
 - **Flags** (`FrameFlag`: flagged, rejected; P / X toggle, U clears) and the
   filter (`FlagFilter`) live in `Session.flags` / `flagFilter`; the filmstrip
   shows `visibleFrames`, arrows step through it, and ⌘A picks what it shows,

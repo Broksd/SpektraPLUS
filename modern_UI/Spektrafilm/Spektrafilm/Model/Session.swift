@@ -502,12 +502,25 @@ final class Session: CanvasHost {
     var rightCollapsed = false
     var topCollapsed = UserDefaults.standard.bool(forKey: Session.uiKey + "topCollapsed") { didSet { UserDefaults.standard.set(topCollapsed, forKey: Session.uiKey + "topCollapsed") } }
     var filmstripCollapsed = UserDefaults.standard.bool(forKey: Session.uiKey + "filmstripCollapsed") { didSet { UserDefaults.standard.set(filmstripCollapsed, forKey: Session.uiKey + "filmstripCollapsed") } }
-    /// The folder browser at the window's leading edge (`FolderBrowser`).
-    /// Kept between launches, like the filmstrip: it is where a session starts.
-    var browserCollapsed = UserDefaults.standard.bool(forKey: Session.uiKey + "browserCollapsed") { didSet { UserDefaults.standard.set(browserCollapsed, forKey: Session.uiKey + "browserCollapsed") } }
-    /// Whether the browser is on screen. Never in a snapshot capture, which
-    /// is measured against the drawing's three regions.
-    var showsFolderBrowser: Bool { !browserCollapsed && !snapshotPanelWidths }
+    /// Which page the left rail shows: the folder browser (`FolderBrowser`)
+    /// or Film and Print. One rail, two pages, switched by the tabs in its
+    /// header — a column of its own did not fit beside both rails and the bar
+    /// on a 1470 pt screen. Kept between launches, like the filmstrip.
+    var leftRailPage = LeftRailPage(rawValue: UserDefaults.standard.string(forKey: Session.uiKey + "leftRailPage") ?? "") ?? .material {
+        didSet { UserDefaults.standard.set(leftRailPage.rawValue, forKey: Session.uiKey + "leftRailPage") }
+    }
+    /// Whether the folder browser is on screen. Never in a snapshot capture,
+    /// which is measured against the drawing's Film and Print rail.
+    var showsFolderBrowser: Bool { !leftCollapsed && leftRailPage == .folders && !snapshotPanelWidths }
+    /// ⇧⌘L: to the folders, or back to Film and Print if they are showing.
+    func toggleFolderBrowser() {
+        if showsFolderBrowser {
+            leftRailPage = .material
+        } else {
+            leftRailPage = .folders
+            leftCollapsed = false
+        }
+    }
     /// Snapshot mode only: hold both rails at `PanelWidthRange.standard`.
     ///
     /// A rail's width is the user's and persists, so a rail dragged wide in

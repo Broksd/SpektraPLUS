@@ -122,26 +122,14 @@ struct EditorWindow: View {
                                                    range: Theme.Metric.leftPanelRange)
     @State private var rightWidth = PanelWidthStore(name: "editor.right",
                                                     range: Theme.Metric.rightPanelRange)
-    @State private var browserWidth = PanelWidthStore(name: "editor.browser",
-                                                      range: PanelWidthRange(narrowest: 180, standard: 220, widest: 380))
+    /// The folder browser's tree outlives the rail's page switch, so the
+    /// expanded folders and their listings survive a look at Film and Print.
     @State private var folderTree = FolderTree()
 
     private var printLayout: some View {
         HStack(spacing: 0) {
-            // The folder browser: left of everything, so a folder is chosen
-            // before anything is done to its photographs.
-            if session.showsFolderBrowser {
-                FolderBrowser(session: session, tree: folderTree)
-                    .frame(width: browserWidth.width)
-                    .overlay(alignment: .trailing) {
-                        PanelResizeHandle(side: .trailingEdge, range: browserWidth.range,
-                                          width: $browserWidth.width)
-                    }
-                    .overlay(alignment: .trailing) { VerticalHairline().allowsHitTesting(false) }
-                    .transition(.move(edge: .leading))
-            }
             if !session.leftCollapsed {
-                LeftPanel(session: session)
+                LeftPanel(session: session, tree: folderTree)
                     .frame(width: session.snapshotPanelWidths ? leftWidth.range.standard
                                                               : leftWidth.width)
                     // The grip is an **overlay**, not a sibling: a 6 pt view

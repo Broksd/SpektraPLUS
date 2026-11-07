@@ -1,4 +1,4 @@
-//  FolderBrowser.swift — the folder tree at the window's leading edge.
+//  FolderBrowser.swift — the folder tree, the left rail's Folders page.
 //
 //  A list of places (the home folder, Pictures, every mounted disk and card,
 //  and any folder the person adds), each one opening into its subfolders.
@@ -178,8 +178,7 @@ struct FolderBrowser: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            header
-            Hairline()
+            toolbar
             ScrollViewReader { proxy in
                 ScrollView(.vertical, showsIndicators: true) {
                     LazyVStack(alignment: .leading, spacing: 0) {
@@ -207,18 +206,15 @@ struct FolderBrowser: View {
             Hairline()
             FlagFilterList(session: session)
         }
-        .railCard()
     }
 
-    private var header: some View {
+    /// The places' own tools, under the rail's tabs.
+    private var toolbar: some View {
         HStack(spacing: 0) {
-            // The window buttons sit on this row while the browser is open
-            // (Windows/TrafficLights.swift); this is their reservation.
-            Spacer().frame(width: Theme.Metric.trafficLightClearance)
-            Text(L("Folders", zh: "文件夹"))
-                .font(Theme.Font.railTitle)
-                .foregroundStyle(Theme.text)
-                .lineLimit(1)
+            Text(L("Places", zh: "位置"))
+                .font(Theme.Font.small)
+                .foregroundStyle(Theme.dim)
+                .padding(.leading, 12)
             Spacer(minLength: 0)
             PanelIconButton(systemImage: "arrow.clockwise",
                             help: L("Refresh the folder list", zh: "刷新文件夹列表")) { tree.refresh() }
@@ -226,8 +222,7 @@ struct FolderBrowser: View {
                             help: L("Add a folder to the list", zh: "添加文件夹到列表")) { tree.chooseRoot() }
                 .padding(.trailing, 6)
         }
-        .frame(height: Theme.Metric.panelHeaderHeight)
-        .background(WindowDragHandle())
+        .frame(height: 28)
     }
 }
 

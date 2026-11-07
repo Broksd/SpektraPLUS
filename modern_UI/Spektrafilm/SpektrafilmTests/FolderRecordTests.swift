@@ -196,6 +196,25 @@ final class FolderRecordTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: FolderRecordStore.url(for: dir).path))
     }
 
+    func testFoldersAreAPageOfTheLeftRail() throws {
+        let key = Session.uiKey + "leftRailPage"
+        let saved = UserDefaults.standard.object(forKey: key)
+        addTeardownBlock { UserDefaults.standard.set(saved, forKey: key) }
+        let s = try session()
+        s.leftRailPage = .material
+        s.leftCollapsed = true
+        s.toggleFolderBrowser()
+        XCTAssertEqual(s.leftRailPage, .folders)
+        XCTAssertFalse(s.leftCollapsed, "⇧⌘L opens a folded rail on its Folders page")
+        XCTAssertTrue(s.showsFolderBrowser)
+        s.toggleFolderBrowser()
+        XCTAssertEqual(s.leftRailPage, .material)
+        XCTAssertFalse(s.showsFolderBrowser)
+        s.leftRailPage = .folders
+        s.snapshotPanelWidths = true
+        XCTAssertFalse(s.showsFolderBrowser, "a capture shows Film and Print")
+    }
+
     func testFlagFilterAdmits() {
         XCTAssertTrue(FlagFilter.all.admits(.rejected))
         XCTAssertTrue(FlagFilter.unflagged.admits(nil))

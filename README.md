@@ -47,7 +47,8 @@ xattr -d -r com.apple.quarantine /Applications/SpektraLab.app
 
 ## Folders and flags
 
-The **folder browser** (Library → Show Folder Browser, ⇧⌘L) lists your home
+The **Folders** tab at the top of the left rail (or Library → Show Folders,
+⇧⌘L, which also switches back to Film and Print) lists your home
 folder, Pictures, every mounted disk and card, and any folder you add with
 **+**. Click a folder to open its photographs in the filmstrip.
 

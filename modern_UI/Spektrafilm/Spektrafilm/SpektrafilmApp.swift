@@ -114,9 +114,9 @@ struct LibraryCommands: Commands {
         // Capture One's keys for flag, reject and clear; like V, H and C they
         // are menu shortcuts, which `TypingKeyGuard` keeps out of text fields.
         CommandMenu(L("Library", zh: "图库")) {
-            Button(session.browserCollapsed ? L("Show Folder Browser", zh: "显示文件夹浏览器")
-                                            : L("Hide Folder Browser", zh: "隐藏文件夹浏览器")) {
-                withAnimation(.easeOut(duration: 0.18)) { session.browserCollapsed.toggle() }
+            Button(session.showsFolderBrowser ? L("Show Film and Print", zh: "显示胶片与相纸")
+                                              : L("Show Folders", zh: "显示文件夹")) {
+                withAnimation(.easeOut(duration: 0.18)) { session.toggleFolderBrowser() }
             }
             .keyboardShortcut("l", modifiers: [.command, .shift])
             Divider()

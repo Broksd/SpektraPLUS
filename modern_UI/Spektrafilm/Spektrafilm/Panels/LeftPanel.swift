@@ -5,7 +5,8 @@
 //  Everything that is a *parameter* of those choices — Camera, Film Format,
 //  Scene Placement, the Tone Mask — moved to the Parameters rail.
 //
-//  The header is the rail's name after the window buttons' clearance. Import,
+//  The rail has two pages, Folders (`FolderBrowser`) and Film and Print, and
+//  its header holds their tabs after the window buttons' clearance. Import,
 //  export and `sidebar.left` moved to the top bar, which is on screen whether
 //  or not this rail is, so the PRD's "on screen at any given time" holds
 //  without the bar having to take them over when the rail folds.
@@ -16,8 +17,22 @@
 
 import SwiftUI
 
+/// The left rail's two pages. The tabs in its header switch them; ⇧⌘L goes
+/// to the folders and back.
+enum LeftRailPage: String, CaseIterable, Identifiable {
+    case folders, material
+    var id: String { rawValue }
+    @MainActor var title: String {
+        switch self {
+        case .folders: L("Folders", zh: "文件夹")
+        case .material: L(.railFilmAndPrint)
+        }
+    }
+}
+
 struct LeftPanel: View {
     @Bindable var session: Session
+    @Bindable var tree: FolderTree
 
     /// The rail's sections, in order. A statement at a time, so the type
     /// checker has no long expression to solve.
@@ -44,35 +59,65 @@ struct LeftPanel: View {
         VStack(spacing: 0) {
             header
             Hairline()
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 0) {
-                    let sections = sections
-                    // A divider **between** sections, never after the last:
-                    // a rule under the final section is a bottom border
-                    // against empty rail, not a separator.
-                    ForEach(Array(sections.enumerated()), id: \.element.0) { index, entry in
-                        if index > 0 { SectionDivider(above: sections[index - 1].0) }
-                        entry.1
-                    }
-                }
+            if session.showsFolderBrowser {
+                FolderBrowser(session: session, tree: tree)
+            } else {
+                materialPage
             }
         }
         .railCard()
     }
+
+    /// Film and Print: the navigator, the film, the paper, the crop and the
+    /// enlarger.
+    private var materialPage: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 0) {
+                let sections = sections
+                // A divider **between** sections, never after the last:
+                // a rule under the final section is a bottom border
+                // against empty rail, not a separator.
+                ForEach(Array(sections.enumerated()), id: \.element.0) { index, entry in
+                    if index > 0 { SectionDivider(above: sections[index - 1].0) }
+                    entry.1
+                }
+            }
+        }
+    }
+
+    /// A snapshot capture shows Film and Print only, as the drawing does.
+    private var pages: [LeftRailPage] { session.snapshotPanelWidths ? [.material] : LeftRailPage.allCases }
+    private var currentPage: LeftRailPage { session.showsFolderBrowser ? .folders : .material }
 
     private var header: some View {
         HStack(spacing: 0) {
             // The three window buttons live here (Windows/TrafficLights.swift).
             // They are *placed* in window coordinates, so this is a reservation
             // and not a container.
-            // With the folder browser open the buttons sit on its header
-            // instead, and this one starts at the rail's own inset.
-            Spacer().frame(width: session.showsFolderBrowser ? Theme.Metric.rowInset
-                                                             : Theme.Metric.trafficLightClearance)
-            Text(L(.railFilmAndPrint))
-                .font(Theme.Font.railTitle)
-                .foregroundStyle(Theme.text)
-                .lineLimit(1)
+            Spacer().frame(width: Theme.Metric.trafficLightClearance)
+            // The page tabs, in the place of the rail's name. Selection tints
+            // the title, as it tints a selected tool's glyph (TopBar).
+            HStack(spacing: 14) {
+                ForEach(pages) { page in
+                    let on = currentPage == page
+                    Button {
+                        withAnimation(.easeOut(duration: 0.12)) { session.leftRailPage = page }
+                    } label: {
+                        Text(page.title)
+                            .font(Theme.Font.railTitle)
+                            // One tab is a title, drawn as the rail's name was.
+                            .foregroundStyle(pages.count == 1 ? Theme.text
+                                             : on ? Theme.accent : Theme.secondaryText)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                            .frame(height: Theme.Metric.panelHeaderHeight)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .help(page == .folders ? L("Folders (⇧⌘L)", zh: "文件夹（⇧⌘L）") : page.title)
+                }
+            }
+            .padding(.trailing, Theme.Metric.panelHeaderTrailing)
             Spacer(minLength: 0)
         }
         .frame(height: Theme.Metric.panelHeaderHeight)
