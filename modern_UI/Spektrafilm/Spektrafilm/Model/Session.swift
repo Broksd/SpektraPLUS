@@ -512,6 +512,19 @@ final class Session: CanvasHost {
     /// Whether the folder browser is on screen. Never in a snapshot capture,
     /// which is measured against the drawing's Film and Print rail.
     var showsFolderBrowser: Bool { !leftCollapsed && leftRailPage == .folders && !snapshotPanelWidths }
+    /// The centre column: the open frame on the canvas, or the folder as a
+    /// grid of thumbnails (`PhotoGrid`). E and G, as in Lightroom.
+    var viewMode = ViewMode(rawValue: UserDefaults.standard.string(forKey: Session.uiKey + "viewMode") ?? "") ?? .single {
+        didSet { UserDefaults.standard.set(viewMode.rawValue, forKey: Session.uiKey + "viewMode") }
+    }
+    /// The grid's thumbnail width, in points.
+    var gridCellWidth = UserDefaults.standard.object(forKey: Session.uiKey + "gridCellWidth") as? Double ?? 170 {
+        didSet { UserDefaults.standard.set(gridCellWidth, forKey: Session.uiKey + "gridCellWidth") }
+    }
+    /// Import Photos (⇧⌘I): the sheet is the editor window's (`ImportSheet`).
+    var showImport = false
+    /// Whether the grid covers the canvas. Never in a snapshot capture.
+    var showsGrid: Bool { viewMode == .grid && !snapshotPanelWidths }
     /// ⇧⌘L: to the folders, or back to Film and Print if they are showing.
     func toggleFolderBrowser() {
         if showsFolderBrowser {

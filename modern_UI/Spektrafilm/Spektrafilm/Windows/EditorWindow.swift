@@ -96,6 +96,9 @@ struct EditorWindow: View {
         // still means "an export was asked for" — it is now consumed here
         // rather than presented, so ⌘E, the editor's menu item and the
         // toolbar's button all keep working without knowing the page moved.
+        .sheet(isPresented: $session.showImport) {
+            ImportSheet(session: session, tree: folderTree)
+        }
         .onChange(of: session.showExport) { _, wanted in
             guard wanted else { return }
             session.showExport = false
@@ -189,6 +192,14 @@ struct EditorWindow: View {
                 .padding(.vertical, Theme.Metric.barTop)
             Hairline(tier: .region)
             CanvasArea(session: session)
+                // The grid over the canvas, not instead of it (PhotoGrid.swift).
+                .overlay { if session.showsGrid { PhotoGrid(session: session) } }
+            // Not in a snapshot capture, which is measured against the
+            // drawing's canvas and strip.
+            if !session.snapshotPanelWidths {
+                Hairline(tier: .region)
+                ViewModeBar(session: session)
+            }
             if !session.filmstripCollapsed {
                 Hairline(tier: .region)
                 // **No vertical hairlines here any more.** They used to be

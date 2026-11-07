@@ -135,6 +135,7 @@
 		5C6EA4AC509736AE9587FCE5 /* ImageDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageDecoder.swift"; sourceTree = "<group>"; };
 		0213404ECEEF9008E1F1D085 /* Library.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Library.swift"; sourceTree = "<group>"; };
 		B580055306499DDD14A30404 /* PairComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PairComposer.swift"; sourceTree = "<group>"; };
+		874F002D1D044BFBE4210CE0 /* PhotoImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhotoImporter.swift"; sourceTree = "<group>"; };
 		ED424614D98D9C201DAC2E61 /* ThumbnailCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThumbnailCache.swift"; sourceTree = "<group>"; };
 		B52F2FA09681D031C6260163 /* Import */ = {
 			isa = PBXGroup;
@@ -143,6 +144,7 @@
 				5C6EA4AC509736AE9587FCE5 /* ImageDecoder.swift */,
 				0213404ECEEF9008E1F1D085 /* Library.swift */,
 				B580055306499DDD14A30404 /* PairComposer.swift */,
+				874F002D1D044BFBE4210CE0 /* PhotoImporter.swift */,
 				ED424614D98D9C201DAC2E61 /* ThumbnailCache.swift */
 			);
 			path = "Import";
@@ -250,7 +252,9 @@
 		6B9FBE8501886FCAB3FC35BF /* CropMaskedThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CropMaskedThumbnail.swift"; sourceTree = "<group>"; };
 		E5F0DD211AC8BBD623882342 /* Filmstrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Filmstrip.swift"; sourceTree = "<group>"; };
 		D8CD04B159534AD4ABA33498 /* FolderBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FolderBrowser.swift"; sourceTree = "<group>"; };
+		D5FCFC4E2F21798B0F0E5661 /* ImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImportSheet.swift"; sourceTree = "<group>"; };
 		FBAC6D9C1B679D6F2364EDAC /* LeftPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LeftPanel.swift"; sourceTree = "<group>"; };
+		A648A9B2B8ED2AF81AA89E74 /* PhotoGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhotoGrid.swift"; sourceTree = "<group>"; };
 		464261EAAE2E1731D8109766 /* RightPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RightPanel.swift"; sourceTree = "<group>"; };
 		43C8D0438EAE575CD4C06CEB /* Panels */ = {
 			isa = PBXGroup;
@@ -259,7 +263,9 @@
 				6B9FBE8501886FCAB3FC35BF /* CropMaskedThumbnail.swift */,
 				E5F0DD211AC8BBD623882342 /* Filmstrip.swift */,
 				D8CD04B159534AD4ABA33498 /* FolderBrowser.swift */,
+				D5FCFC4E2F21798B0F0E5661 /* ImportSheet.swift */,
 				FBAC6D9C1B679D6F2364EDAC /* LeftPanel.swift */,
+				A648A9B2B8ED2AF81AA89E74 /* PhotoGrid.swift */,
 				464261EAAE2E1731D8109766 /* RightPanel.swift */
 			);
 			path = "Panels";
@@ -402,6 +408,7 @@
 		7D4B68041F25E6391CDA5225 /* PanelResizeWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PanelResizeWiringTests.swift"; sourceTree = "<group>"; };
 		670BA02F66C2FB67FF1B53EE /* ParamsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParamsTests.swift"; sourceTree = "<group>"; };
 		5F214EAA4F7ED54CD0BD2A5F /* PerformanceRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PerformanceRegressionTests.swift"; sourceTree = "<group>"; };
+		10B993828830E8FB03F0DF28 /* PhotoImporterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhotoImporterTests.swift"; sourceTree = "<group>"; };
 		C922BEB494C7D06A4440A130 /* PresetsSheetCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PresetsSheetCapture.swift"; sourceTree = "<group>"; };
 		01CA7776C0EA70DF7CA1038D /* PrintCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrintCacheTests.swift"; sourceTree = "<group>"; };
 		A02C1261DEB889B4B7370EFA /* PrintLUTTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrintLUTTests.swift"; sourceTree = "<group>"; };
@@ -473,6 +480,7 @@
 				7D4B68041F25E6391CDA5225 /* PanelResizeWiringTests.swift */,
 				670BA02F66C2FB67FF1B53EE /* ParamsTests.swift */,
 				5F214EAA4F7ED54CD0BD2A5F /* PerformanceRegressionTests.swift */,
+				10B993828830E8FB03F0DF28 /* PhotoImporterTests.swift */,
 				C922BEB494C7D06A4440A130 /* PresetsSheetCapture.swift */,
 				01CA7776C0EA70DF7CA1038D /* PrintCacheTests.swift */,
 				A02C1261DEB889B4B7370EFA /* PrintLUTTests.swift */,
@@ -658,6 +666,7 @@
 		CA2BE094757F62E51F68AC84 /* ImageDecoder.swift */ = {isa = PBXBuildFile; fileRef = 5C6EA4AC509736AE9587FCE5; };
 		1297465B9809E3E4D0ABEC0E /* Library.swift */ = {isa = PBXBuildFile; fileRef = 0213404ECEEF9008E1F1D085; };
 		D0CC2825C04D7FECC550EFCD /* PairComposer.swift */ = {isa = PBXBuildFile; fileRef = B580055306499DDD14A30404; };
+		D8052867F463DA11474AF780 /* PhotoImporter.swift */ = {isa = PBXBuildFile; fileRef = 874F002D1D044BFBE4210CE0; };
 		9F7921DB7FEFD012C022E503 /* ThumbnailCache.swift */ = {isa = PBXBuildFile; fileRef = ED424614D98D9C201DAC2E61; };
 		3F943E2C3A3ABE740621CF6A /* Localization.swift */ = {isa = PBXBuildFile; fileRef = 1CC1E55A9F47D4518AE30974; };
 		C132072E827EC648F0EF3A98 /* Strings.swift */ = {isa = PBXBuildFile; fileRef = A649699A5D48C90003A81CF9; };
@@ -701,7 +710,9 @@
 		D10D12A1E58E8FF4886C03E1 /* CropMaskedThumbnail.swift */ = {isa = PBXBuildFile; fileRef = 6B9FBE8501886FCAB3FC35BF; };
 		5B7419D000CA2224A11A3D08 /* Filmstrip.swift */ = {isa = PBXBuildFile; fileRef = E5F0DD211AC8BBD623882342; };
 		04ACDC02D3D743728A4BF890 /* FolderBrowser.swift */ = {isa = PBXBuildFile; fileRef = D8CD04B159534AD4ABA33498; };
+		0FBFB20ADEE0B5402311C1AF /* ImportSheet.swift */ = {isa = PBXBuildFile; fileRef = D5FCFC4E2F21798B0F0E5661; };
 		E57183AE0AB2E1BF0A2E645F /* LeftPanel.swift */ = {isa = PBXBuildFile; fileRef = FBAC6D9C1B679D6F2364EDAC; };
+		B59E13E19837CFF41C1DE672 /* PhotoGrid.swift */ = {isa = PBXBuildFile; fileRef = A648A9B2B8ED2AF81AA89E74; };
 		C6B42D61DC9D694270735A98 /* RightPanel.swift */ = {isa = PBXBuildFile; fileRef = 464261EAAE2E1731D8109766; };
 		9B976551199A96986B5C6500 /* EngineClient.swift */ = {isa = PBXBuildFile; fileRef = FE486EFAAFCD8BEF3A8D71D6; };
 		BB777A473A5AE7E821D49CA7 /* EngineMessage.swift */ = {isa = PBXBuildFile; fileRef = 4C57EB1895B5E1FE0824358E; };
@@ -796,6 +807,7 @@
 				CA2BE094757F62E51F68AC84 /* ImageDecoder.swift */,
 				1297465B9809E3E4D0ABEC0E /* Library.swift */,
 				D0CC2825C04D7FECC550EFCD /* PairComposer.swift */,
+				D8052867F463DA11474AF780 /* PhotoImporter.swift */,
 				9F7921DB7FEFD012C022E503 /* ThumbnailCache.swift */,
 				3F943E2C3A3ABE740621CF6A /* Localization.swift */,
 				C132072E827EC648F0EF3A98 /* Strings.swift */,
@@ -839,7 +851,9 @@
 				D10D12A1E58E8FF4886C03E1 /* CropMaskedThumbnail.swift */,
 				5B7419D000CA2224A11A3D08 /* Filmstrip.swift */,
 				04ACDC02D3D743728A4BF890 /* FolderBrowser.swift */,
+				0FBFB20ADEE0B5402311C1AF /* ImportSheet.swift */,
 				E57183AE0AB2E1BF0A2E645F /* LeftPanel.swift */,
+				B59E13E19837CFF41C1DE672 /* PhotoGrid.swift */,
 				C6B42D61DC9D694270735A98 /* RightPanel.swift */,
 				9B976551199A96986B5C6500 /* EngineClient.swift */,
 				BB777A473A5AE7E821D49CA7 /* EngineMessage.swift */,
@@ -949,6 +963,7 @@
 		CCB54740C6B298D2CB260013 /* PanelResizeWiringTests.swift */ = {isa = PBXBuildFile; fileRef = 7D4B68041F25E6391CDA5225; };
 		039B6FFCF4BFB676662323BD /* ParamsTests.swift */ = {isa = PBXBuildFile; fileRef = 670BA02F66C2FB67FF1B53EE; };
 		CA361A9245BF6B8D045AC68B /* PerformanceRegressionTests.swift */ = {isa = PBXBuildFile; fileRef = 5F214EAA4F7ED54CD0BD2A5F; };
+		353E9E18C2E59DE367E2CB7A /* PhotoImporterTests.swift */ = {isa = PBXBuildFile; fileRef = 10B993828830E8FB03F0DF28; };
 		30A9A6A482AACCB587019ADA /* PresetsSheetCapture.swift */ = {isa = PBXBuildFile; fileRef = C922BEB494C7D06A4440A130; };
 		D9117673191FD5C22C19AC20 /* PrintCacheTests.swift */ = {isa = PBXBuildFile; fileRef = 01CA7776C0EA70DF7CA1038D; };
 		503F68DEA38B3A6A770B76FC /* PrintLUTTests.swift */ = {isa = PBXBuildFile; fileRef = A02C1261DEB889B4B7370EFA; };
@@ -1022,6 +1037,7 @@
 		637B70BEEE9CC3B5EF251B7B /* ImageDecoder.swift */ = {isa = PBXBuildFile; fileRef = 5C6EA4AC509736AE9587FCE5; };
 		3FB16CB7FDC19A13FFA1FF8F /* Library.swift */ = {isa = PBXBuildFile; fileRef = 0213404ECEEF9008E1F1D085; };
 		970661502612597BEC51DEB0 /* PairComposer.swift */ = {isa = PBXBuildFile; fileRef = B580055306499DDD14A30404; };
+		1FF93F14D6738286346AD71A /* PhotoImporter.swift */ = {isa = PBXBuildFile; fileRef = 874F002D1D044BFBE4210CE0; };
 		96078643C4B893F824429248 /* ThumbnailCache.swift */ = {isa = PBXBuildFile; fileRef = ED424614D98D9C201DAC2E61; };
 		C32D9E7188674C824BB718C1 /* Localization.swift */ = {isa = PBXBuildFile; fileRef = 1CC1E55A9F47D4518AE30974; };
 		07099AF767156E71C3EAA913 /* Strings.swift */ = {isa = PBXBuildFile; fileRef = A649699A5D48C90003A81CF9; };
@@ -1065,7 +1081,9 @@
 		473524AAA6EE61537B35C232 /* CropMaskedThumbnail.swift */ = {isa = PBXBuildFile; fileRef = 6B9FBE8501886FCAB3FC35BF; };
 		3A9D6F08175C3700BE7F4D44 /* Filmstrip.swift */ = {isa = PBXBuildFile; fileRef = E5F0DD211AC8BBD623882342; };
 		1BA62557DF7BE51FCDB83B8F /* FolderBrowser.swift */ = {isa = PBXBuildFile; fileRef = D8CD04B159534AD4ABA33498; };
+		1E200B365E405F42A57DF1A4 /* ImportSheet.swift */ = {isa = PBXBuildFile; fileRef = D5FCFC4E2F21798B0F0E5661; };
 		188809DA051764CC0BDE9340 /* LeftPanel.swift */ = {isa = PBXBuildFile; fileRef = FBAC6D9C1B679D6F2364EDAC; };
+		96C1FF59E1A41E514630ACDC /* PhotoGrid.swift */ = {isa = PBXBuildFile; fileRef = A648A9B2B8ED2AF81AA89E74; };
 		6B1CA4C281141671EFCC0777 /* RightPanel.swift */ = {isa = PBXBuildFile; fileRef = 464261EAAE2E1731D8109766; };
 		537D9D7B15DB244D7CC4E95C /* EngineClient.swift */ = {isa = PBXBuildFile; fileRef = FE486EFAAFCD8BEF3A8D71D6; };
 		02265CD0BEC1FCD089B4C188 /* EngineMessage.swift */ = {isa = PBXBuildFile; fileRef = 4C57EB1895B5E1FE0824358E; };
@@ -1154,6 +1172,7 @@
 				CCB54740C6B298D2CB260013 /* PanelResizeWiringTests.swift */,
 				039B6FFCF4BFB676662323BD /* ParamsTests.swift */,
 				CA361A9245BF6B8D045AC68B /* PerformanceRegressionTests.swift */,
+				353E9E18C2E59DE367E2CB7A /* PhotoImporterTests.swift */,
 				30A9A6A482AACCB587019ADA /* PresetsSheetCapture.swift */,
 				D9117673191FD5C22C19AC20 /* PrintCacheTests.swift */,
 				503F68DEA38B3A6A770B76FC /* PrintLUTTests.swift */,
@@ -1227,6 +1246,7 @@
 				637B70BEEE9CC3B5EF251B7B /* ImageDecoder.swift */,
 				3FB16CB7FDC19A13FFA1FF8F /* Library.swift */,
 				970661502612597BEC51DEB0 /* PairComposer.swift */,
+				1FF93F14D6738286346AD71A /* PhotoImporter.swift */,
 				96078643C4B893F824429248 /* ThumbnailCache.swift */,
 				C32D9E7188674C824BB718C1 /* Localization.swift */,
 				07099AF767156E71C3EAA913 /* Strings.swift */,
@@ -1270,7 +1290,9 @@
 				473524AAA6EE61537B35C232 /* CropMaskedThumbnail.swift */,
 				3A9D6F08175C3700BE7F4D44 /* Filmstrip.swift */,
 				1BA62557DF7BE51FCDB83B8F /* FolderBrowser.swift */,
+				1E200B365E405F42A57DF1A4 /* ImportSheet.swift */,
 				188809DA051764CC0BDE9340 /* LeftPanel.swift */,
+				96C1FF59E1A41E514630ACDC /* PhotoGrid.swift */,
 				6B1CA4C281141671EFCC0777 /* RightPanel.swift */,
 				537D9D7B15DB244D7CC4E95C /* EngineClient.swift */,
 				02265CD0BEC1FCD089B4C188 /* EngineMessage.swift */,

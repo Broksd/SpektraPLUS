@@ -53,29 +53,7 @@ struct Filmstrip: View {
                                     session.click(frame.id,
                                                   command: NSEvent.modifierFlags.contains(.command))
                                 }
-                                .contextMenu {
-                                    // On the frame under the pointer, or on
-                                    // the whole picked set when it is in it.
-                                    let targets = session.isPicked(frame.id) ? session.selectedFrames : [frame.id]
-                                    Button(L("Flag (P)", zh: "标为留用 (P)")) { session.setFlag(.flagged, for: targets) }
-                                    Button(L("Reject (X)", zh: "标为排除 (X)")) { session.setFlag(.rejected, for: targets) }
-                                    Button(L("Clear Flag (U)", zh: "清除旗标 (U)")) { session.setFlag(nil, for: targets) }
-                                    Divider()
-                                    Button(L(.helpRevealInFinder)) { NSWorkspace.shared.activateFileViewerSelecting([frame.id]) }
-                                    if HalfFramePair.isPair(frame.id) {
-                                        Button(L("Delete Pair", zh: "删除半格拼接")) { session.deletePair(frame.id) }
-                                    } else {
-                                        Button(L("New Half-Frame Pair", zh: "新建半格拼接")) {
-                                            if !session.isPicked(frame.id) { session.click(frame.id) }
-                                            session.newPair()
-                                        }
-                                        .disabled(!session.canMakePair)
-                                    }
-                                    Button(L(.helpResetDefaults)) {
-                                        if frame.id == session.selection { session.resetParams(); session.resetAdjustments() }
-                                        else { Sidecar.remove(for: frame.id); session.refreshState(for: frame.id) }
-                                    }
-                                }
+                                .contextMenu { FrameContextMenu(session: session, frame: frame.id) }
                         }
                     }
                     .padding(.horizontal, 10)

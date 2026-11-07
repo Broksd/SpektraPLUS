@@ -274,6 +274,8 @@ enum Theme {
         /// (y 1895…2160) are what the drawing separates it from the rails
         /// with.
         static let filmstripHeight: CGFloat = 132
+        /// The single / grid switch between the canvas and the filmstrip.
+        static let viewModeBarHeight: CGFloat = 26
 
         /// **Left, 232 … 380.** The floor is the Camera section's AE Method
         /// row, which is the widest thing on the rail: a 74 pt label column,

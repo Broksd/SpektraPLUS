@@ -218,11 +218,17 @@ struct FolderBrowser: View {
             Spacer(minLength: 0)
             PanelIconButton(systemImage: "arrow.clockwise",
                             help: L("Refresh the folder list", zh: "刷新文件夹列表")) { tree.refresh() }
-            PanelIconButton(systemImage: "plus",
-                            help: L("Add a folder to the list", zh: "添加文件夹到列表")) { tree.chooseRoot() }
+            // Import, where the browser's + used to add a place: adding a
+            // place is the menu on this row, and on any folder in the tree.
+            PanelIconButton(systemImage: "square.and.arrow.down.on.square",
+                            help: L("Import Photos… (⇧⌘I)", zh: "导入照片…（⇧⌘I）")) { session.showImport = true }
                 .padding(.trailing, 6)
         }
         .frame(height: 28)
+        .contentShape(Rectangle())
+        .contextMenu {
+            Button(L("Add a Place…", zh: "添加位置…")) { tree.chooseRoot() }
+        }
     }
 }
 

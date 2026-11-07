@@ -52,6 +52,17 @@ The **Folders** tab at the top of the left rail (or Library → Show Folders,
 folder, Pictures, every mounted disk and card, and any folder you add with
 **+**. Click a folder to open its photographs in the filmstrip.
 
+**Import Photos** (the import button above the folder tree, or Library →
+Import Photos…, ⇧⌘I) copies the open folder's photos — all of them or the
+selected ones — or another folder or card, into a destination, filed by
+capture date (`2026/2026-11-07` and other layouts). It only copies: the
+originals are never moved or deleted, and a file already at the destination
+is skipped.
+
+The bar between the canvas and the filmstrip switches between the **single
+photo** (E) and a **grid** of the folder (G), with a thumbnail size slider.
+Double-click a photo in the grid to open it.
+
 Cull with **P** (flag), **X** (reject) and **U** (clear); P and X are switches.
 The filter under the folder tree (or Library → Show, ⌥⌘1–4) shows all,
 flagged, unflagged or rejected photos, and ⌘A selects only what the filter

@@ -528,6 +528,16 @@ inside a field. `TypingKeyGuard` is a local key monitor that sends typing keys
   Pictures, mounted volumes and added folders, lazily. A click is
   `Session.open(urls: [folder])`; `Session.libraryFolder` is the folder on
   screen. Snapshot captures show Film and Print only.
+- **Import** (`Import/PhotoImporter.swift`, `Panels/ImportSheet.swift`, ⇧⌘I)
+  copies photographs into a destination, filed by EXIF capture day
+  (`DateFolderLayout`). Copy only; a same-name, same-size, same-date file is
+  skipped and a different one renamed `-1`, `-2`.
+- **Grid and single** (`Panels/PhotoGrid.swift`, `Session.viewMode`, G / E):
+  the grid is an overlay on the canvas, not a replacement, so the Metal view
+  and its renderer survive the switch. `ViewModeBar` sits between the canvas
+  and the filmstrip; neither is drawn in snapshot captures.
+- The Film and Print page no longer lists the Navigator; `NavigatorSection`
+  stays because the thumbnails use its drawing.
 - **Flags** (`FrameFlag`: flagged, rejected; P / X toggle, U clears) and the
   filter (`FlagFilter`) live in `Session.flags` / `flagFilter`; the filmstrip
   shows `visibleFrames`, arrows step through it, and ⌘A picks what it shows,

@@ -119,6 +119,14 @@ struct LibraryCommands: Commands {
                 withAnimation(.easeOut(duration: 0.18)) { session.toggleFolderBrowser() }
             }
             .keyboardShortcut("l", modifiers: [.command, .shift])
+            Button(L("Import Photos…", zh: "导入照片…")) { session.showImport = true }
+                .keyboardShortcut("i", modifiers: [.command, .shift])
+                .disabled(session.batchExporting)
+            Divider()
+            Button(L("Single Photo", zh: "单张显示")) { session.viewMode = .single }
+                .keyboardShortcut("e", modifiers: [])
+            Button(L("Grid", zh: "网格显示")) { session.viewMode = .grid }
+                .keyboardShortcut("g", modifiers: [])
             Divider()
             Button(L("Flag", zh: "标为留用")) { session.toggleFlag(.flagged) }
                 .keyboardShortcut("p", modifiers: []).disabled(!session.canFlag)
