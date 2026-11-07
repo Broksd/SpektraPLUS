@@ -59,6 +59,14 @@
 - 导入记住上次的来源（`library.importSource`），插着时自动选上；“选择…”菜单里有当前文件夹和最近 6 个来源（`library.importRecentSources`），未连接的显示为灰色。
 - 网格和导入在同一个提交里（共用 Session、菜单和窗口的改动）。按上游“一个提交只做一件事”的规则，提 PR 前要拆开。
 
+## 改名为 Spektraplus（2026-11-07）
+
+- 上游声明 SpektraLab 的名称和图标是商标，fork 对外发布需换名换图标，所以改名 Spektraplus，并画了新图标（`Spektrafilm/Spektraplus.icon`：胶片画框 + 光谱渐变的“+”）。
+- 只改显示给人看的文字；**不改**：Bundle ID `com.hanze.filmify`、数据目录 `Application Support/SpektraLab`、日志目录、`SpektraLab.folder.json`、智能体 ID `spektralab`、DI LUT 资源文件名，以免已有数据读不到。
+- “关于”、许可证 README、README 都写明：非官方的 SpektraLab 修改版；胶片模拟来自 Andrea Volpato 的 spektrafilm（按其许可证只做事实性提及，不放进名称和图标）。源码链接指向 `Broksd/SpektraLab`。
+- “检查更新”仍然查询上游 SpektraLab 的发布，需要另行决定。
+- **改名后不再适合向上游提 PR**，“向上游提交前”那一节作废，除非只挑功能提交、不带改名。
+
 ## 记录文件格式（`SpektraLab.folder.json`）
 
 ```json
