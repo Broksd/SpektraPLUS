@@ -40,12 +40,12 @@
 | `modern_UI/Spektrafilm/Spektrafilm/Model/FolderRecord.swift`（新） | `FrameFlag`、`FlagFilter`、`FolderRecord`（JSON 结构）、`FolderRecordStore`（读写、缓存、按文件修改时间失效） |
 | `.../Model/Sidecar.swift` | `save` 时同步写入文件夹记录；`load` 比较应用存储和文件夹记录，用较新的一份，并把文件夹里的那份写回应用存储；`remove` 同步清除 |
 | `.../Model/FrameOrder.swift` | 拖动排序同时写入记录；本机没有排序时用记录里的 |
-| `.../Model/Session.swift` | `libraryFolder`、`flags`、`flagFilter`、`visibleFrames`、`toggleFlag` / `setFlag`、`restoreFolderRecord`、`rememberOpenFrame`、`browserCollapsed` / `showsFolderBrowser`；`open(urls:)` 恢复记录；方向键和 ⌘A 按筛选结果工作 |
+| `.../Model/Session.swift` | `libraryFolder`、`flags`、`flagFilter`、`visibleFrames`、`toggleFlag` / `setFlag`、`restoreFolderRecord`、`rememberOpenFrame`、`leftRailPage` / `showsFolderBrowser` / `toggleFolderBrowser`；`open(urls:)` 恢复记录；方向键和 ⌘A 按筛选结果工作 |
 | `.../Panels/FolderBrowser.swift`（新） | `FolderTree`（根：个人文件夹、图片、已挂载卷、用户添加的文件夹；展开时才读取）、`FolderBrowser`、`FlagFilterList` |
 | `.../Panels/Filmstrip.swift` | 显示 `visibleFrames`；旗标角标、排除变暗；右键菜单设置旗标；"没有符合筛选条件的照片"提示 |
-| `.../Windows/EditorWindow.swift` | 最左侧加浏览器栏（可拖宽，`editor.browser`） |
-| `.../Windows/TopBar.swift`、`.../Panels/LeftPanel.swift` | 浏览器打开时由它的标题栏为窗口红绿灯按钮留位 |
-| `.../SpektrafilmApp.swift` | `LibraryCommands`：⇧⌘L 显示或隐藏浏览器，P / X / U，⌥⌘1–4 筛选 |
+| `.../Windows/EditorWindow.swift` | 把 `FolderTree` 传给左栏（浏览器不再单独占一列） |
+| `.../Panels/LeftPanel.swift` | 左栏分两页：“文件夹”和“胶片与相纸”，栏顶标签切换（`LeftRailPage`） |
+| `.../SpektrafilmApp.swift` | `LibraryCommands`：⇧⌘L 在“文件夹”和“胶片与相纸”之间切换，P / X / U，⌥⌘1–4 筛选 |
 | `.../Windows/SettingsWindow.swift` | 设置 → 通用 → 图库："在每个文件夹中保存记录"（`library.folderRecord`，默认开） |
 | `modern_UI/Spektrafilm/SpektrafilmTests/FolderRecordTests.swift`（新） | 记录读写、历史合并、旗标与筛选恢复、P/X 开关、⌘A、跨存储读取、新旧比较、重置保留旗标、排序、关闭开关 |
 | `ARCHITECTURE.md`、`AGENTS.md`、`README.md`、`README.zh-CN.md` | 文档 |
@@ -79,6 +79,7 @@
 - 只打开文件夹不会生成记录；第一次打旗标或编辑时才会创建。
 - 半格拼接（`.spektrapair`）不进文件夹记录。
 - 截图测试模式（`snapshotPanelWidths`）下不显示文件夹浏览器。
+- 文件夹浏览器是左栏的一页，不单独占一列：顶栏自己最少要 821 pt，单独一列时窗口最少要 1596 pt，在 1470 pt 的屏幕上整行溢出，浏览器左边被切、标题压在红绿灯下（2026-11-07 本地手动测试发现）。
 - 不保存撤销历史和导出记录。
 
 ## 本地接下来要做的
@@ -100,7 +101,7 @@ open build/DerivedData/Build/Products/Debug/SpektraLab.app
 1. 修完所有编译错误和测试失败，把重新生成的 `project.pbxproj` 一起提交，推到 `feature/folder-library`。
 2. 完整测试在没有相机样本时约有 25 个用例会跳过（AGENTS.md trap 26），属于正常情况。
 3. 用**复制出来的**照片文件夹手动测试：
-   1. 文件夹浏览器能显示，点文件夹后胶片条出现照片（看不到就按 ⇧⌘L）；
+   1. 文件夹浏览器能显示，点文件夹后胶片条出现照片（点左栏顶部的“文件夹”标签，或按 ⇧⌘L）；
    2. P / X / U 打旗标，角标和变暗正确，再按一次 P 或 X 会取消；
    3. 筛选和张数正确；筛选后 ⌘A 再 ⌘E 只导出筛选出的照片；
    4. 编辑后文件夹里出现 `SpektraLab.folder.json`；
